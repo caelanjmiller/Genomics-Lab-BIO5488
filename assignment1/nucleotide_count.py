@@ -11,6 +11,7 @@ def FASTA_IO(FILE) -> dict:
     FILENAME: str = os.path.basename(FILE)
     # Check to see if provided File argument is a valid FASTA file
     if FILENAME.endswith(FASTA_FILE_EXTENSIONS):
+        # Create list of lines from FASTA file & strip whitespace
         SEQUENCE: list = [line.strip() for line in open(FILE).readlines()]
         fasta: dict = {}
         fasta[SEQUENCE[0].replace('>', '')] = "".join(SEQUENCE[1:])
