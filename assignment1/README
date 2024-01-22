@@ -1,12 +1,19 @@
 Please provide the exact command line arguments you used to generate your results.
 {How to run nuc_count.py}
 {How to run make_seq.py for length 1,000,000 with frequencies used}
+Usage:
+python nucleotide_count.py <FASTA> <PRINTOUT>
+python create_nucleotide_sequence.py <LENGTH> <A FREQ> <C FREQ> <G FREQ> <T FREQ> <FASTA OUTPUT>
 -
 Question 1:
-{nuc_count.py nucleotide counts of human chr22 output}
+Answer is nucleotide as key and the count as the value
+{'A': 17867246, 'T': 18066406, 'G': 14094472, 'C': 13916133}
+python nucleotide_count.py chr22.fna count
 -
 Question 2:
-{modified nuc_count.py nucleotide frequencies of human chr22 output}
+Answer is nucleotide as key and the frequency as the value
+{'A': '0.279', 'T': '0.283', 'G': '0.220', 'C': '0.218'}
+python nucleotide_count.py chr22.fna frequency
 -
 Question 3:
 {modified nuc_count.py dinucleotide frequencies of human chr22 output}
