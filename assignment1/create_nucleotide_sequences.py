@@ -1,13 +1,15 @@
 from sys import argv
+import random
 
-LENGTH: int = argv[1]
-A_FREQ: float = argv[2]
-C_FREQ: float = argv[3]
-G_FREQ: float = argv[4]
-T_FREQ: float = argv[5]
+# Parse user input & initialize variable to correct data type
+LENGTH: int = int(argv[1])
+A_FREQ: float = float(argv[2])
+C_FREQ: float = float(argv[3])
+G_FREQ: float = float(argv[4])
+T_FREQ: float = float(argv[5])
 FASTA_OUTPUT: str = argv[6]
 
-NUCLEOTIDE_FREQ: dict = {'A': float(A_FREQ), 'T': float(T_FREQ), 'C': float(C_FREQ), 'G': float(G_FREQ)}
+NUCLEOTIDE_FREQ: dict = {'A': A_FREQ, 'C': C_FREQ, 'G': G_FREQ, 'T': T_FREQ}
 
 def create_novel_dna_sequence(length: int, frequencies: dict) -> dict:
     """ 
@@ -19,11 +21,11 @@ def create_novel_dna_sequence(length: int, frequencies: dict) -> dict:
     if total_nucleotide_frequency > IDEAL_NUCLEOTIDE_FREQ or total_nucleotide_frequency < IDEAL_NUCLEOTIDE_FREQ:
         raise Exception('Provided nucleotide frequencies do not sum to 1')
     else:
-        # generated_dna_sequence: str = ''
-        # novel_seq: dict = {}
-        # novel_seq['GENERATED_SEQUENCE'] = generated_dna_sequence
-        # return novel_seq
-        return
+        # Creates a DNA sequence string of a provided length that from the four choices are weighted (to be chosen at random) by the provided frequencies
+        generated_dna_sequence: str = "".join(random.choices(population=['A', 'C', 'G', 'T'], weights=frequencies.values(), k=length))
+        novel_seq: dict = {}
+        novel_seq['GENERATED_SEQUENCE'] = generated_dna_sequence
+        return novel_seq
 
 def sequence_to_FASTA (novel_seq: dict, FASTA_OUTPUT: str):
     """
