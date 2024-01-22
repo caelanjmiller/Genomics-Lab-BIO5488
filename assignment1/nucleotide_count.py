@@ -39,6 +39,10 @@ def count_nucleotides(fasta: dict) -> dict:
                 continue
     return base_count
 
+def count_dinucleotides(fasta: dict) -> dict:
+    """ Counts dinucleotides & returns a dict of counts """
+    pass
+
 def calculate_nucleotide_frequency(base_count: dict) -> dict:
     """Calculate nucleotide frequencies from base counts"""
     total_valid_basecount: int = sum(base_count.values())
@@ -50,13 +54,24 @@ def calculate_nucleotide_frequency(base_count: dict) -> dict:
     nucleotide_frequencies['C']: str = "{:.3f}".format(base_count['C'] / total_valid_basecount)
     return nucleotide_frequencies
 
+def calculate_dinucleotide_frequency(base_count: dict) -> dict:
+    """ Calculate dinucleotide frequencies"""
+    pass
+
+
 fasta = FASTA_IO(FILE)
 nucleotide_count = count_nucleotides(fasta)
 nucleotide_frequency = calculate_nucleotide_frequency(nucleotide_count)
+dinucleotide_count = count_dinucleotides(fasta)
+dinucleotide_frequency = calculate_dinucleotide_frequency(dinucleotide_count)
 
 if PRINTOUT == 'count':
     print(nucleotide_count)
 elif PRINTOUT == 'frequency':
     print(nucleotide_frequency)
+elif PRINTOUT == 'dicount':
+    print(dinucleotide_count)
+elif PRINTOUT == 'difrequency':
+    print(dinucleotide_frequency)
 else:
     raise Exception('Provide valid printout option')

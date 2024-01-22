@@ -7,12 +7,12 @@ python create_nucleotide_sequence.py <LENGTH> <A FREQ> <C FREQ> <G FREQ> <T FREQ
 -
 Question 1:
 Answer is nucleotide as key and the count as the value
-{'A': 17867246, 'T': 18066406, 'G': 14094472, 'C': 13916133}
+{'A': 10382214, 'T': 10370725, 'G': 9246186, 'C': 9160652}
 python nucleotide_count.py chr22.fna count
 -
 Question 2:
 Answer is nucleotide as key and the frequency as the value
-{'A': '0.279', 'T': '0.283', 'G': '0.220', 'C': '0.218'}
+{'A': '0.265', 'T': '0.265', 'G': '0.236', 'C': '0.234'}
 python nucleotide_count.py chr22.fna frequency
 -
 Question 3:
