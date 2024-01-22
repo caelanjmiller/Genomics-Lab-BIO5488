@@ -52,6 +52,11 @@ def count_dinucleotides(fasta: dict) -> dict:
         dinucleotides.append(dinucleotide_slice)
     # Utilize Counter subclass to tally up the dinucleotides
     dinucleotide_count: dict = dict(Counter(dinucleotides))
+    # Filter out non-canonical nucleotides from dinucleotide counts by iterating over list of dinucleotide keys ('AT', 'GC', etc) and removing them from dinucleotide count dictionary
+    non_canonical_nucleotides: list = ['Y', 'N', 'W', 'R', 'B', 'H', 'V', 'S', 'K', 'D', 'M', 'U']
+    for dinucleotide in list(dinucleotide_count.keys()):
+        if any(nucleotide in dinucleotide for nucleotide in non_canonical_nucleotides):
+            del dinucleotide_count[dinucleotide]
     return dinucleotide_count
 
 def calculate_nucleotide_frequency(base_count: dict) -> dict:
@@ -65,10 +70,13 @@ def calculate_nucleotide_frequency(base_count: dict) -> dict:
     nucleotide_frequencies['C']: str = "{:.3f}".format(base_count['C'] / total_valid_basecount)
     return nucleotide_frequencies
 
-def calculate_dinucleotide_frequency(base_count: dict) -> dict:
+def calculate_dinucleotide_frequency(dinucleotide_count: dict) -> dict:
     """ Calculate dinucleotide frequencies"""
-    pass
-
+    dinucleotide_frequency: dict = {}
+    total_valid_dinucleotide_count: int = sum(dinucleotide_count.values())
+    for dinucleotide, count in dinucleotide_count.items():
+        dinucleotide_frequency[dinucleotide]: str = "{:.3f}".format(count / total_valid_dinucleotide_count)
+    return dinucleotide_frequency
 
 fasta = FASTA_IO(FILE)
 nucleotide_count = count_nucleotides(fasta)
