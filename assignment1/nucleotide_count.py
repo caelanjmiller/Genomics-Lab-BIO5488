@@ -1,5 +1,6 @@
 from sys import argv
 import os
+from collections import Counter
 
 FILE = argv[1]
 PRINTOUT = argv[2]
@@ -41,7 +42,17 @@ def count_nucleotides(fasta: dict) -> dict:
 
 def count_dinucleotides(fasta: dict) -> dict:
     """ Counts dinucleotides & returns a dict of counts """
-    pass
+    dinucleotides: list = []
+    fasta_header: str = list(fasta.keys())[0]
+    # Convert sequence str from fasta dict into a list of individual characters
+    sequence: list = [*fasta[fasta_header]]
+    # Iterate through sequence & take slice of sequence list (2 nucleotides) and join together as a string and append to list
+    for nucleotide_index in range(len(sequence) - 1):
+        dinucleotide_slice: str = "".join(sequence[nucleotide_index:(nucleotide_index + 2)])
+        dinucleotides.append(dinucleotide_slice)
+    # Utilize Counter subclass to tally up the dinucleotides
+    dinucleotide_count: dict = dict(Counter(dinucleotides))
+    return dinucleotide_count
 
 def calculate_nucleotide_frequency(base_count: dict) -> dict:
     """Calculate nucleotide frequencies from base counts"""
