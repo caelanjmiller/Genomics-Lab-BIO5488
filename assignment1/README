@@ -3,25 +3,25 @@ Please provide the exact command line arguments you used to generate your result
 {How to run make_seq.py for length 1,000,000 with frequencies used}
 Usage:
 python nucleotide_count.py <FASTA> <PRINTOUT>
-python create_nucleotide_sequence.py <LENGTH> <A FREQ> <C FREQ> <G FREQ> <T FREQ> <FASTA OUTPUT>
+python create_nucleotide_sequence.py <LENGTH> <A FREQ> <C FREQ> <G FREQ> <T FREQ> <FASTA OUTPUT NAME>
 -
 Question 1:
 Answer is nucleotide as key and the count as the value
-{'A': 10382214, 'T': 10370725, 'G': 9246186, 'C': 9160652}
+{'A': 10382214, 'C': 9160652, 'G': 9246186, 'T': 10370725}
 python nucleotide_count.py chr22.fna count
 -
 Question 2:
 Answer is nucleotide as key and the frequency as the value
-{'A': '0.265', 'T': '0.265', 'G': '0.236', 'C': '0.234'}
+{'A': '0.265', 'C': '0.234', 'G': '0.236', 'T': '0.265'}
 python nucleotide_count.py chr22.fna frequency
 -
 Question 3:
 Answer is dinucleotide as key and frequency as the value
-{'GA': '0.062', 'AA': '0.079', 'AT': '0.060', 'TT': '0.080', 'TC': '0.061', 'CT': '0.074', 'TG': '0.077', 'GT': '0.051', 'TA': '0.047', 'AG': '0.075', 'CC': '0.067', 'GG': '0.068', 'CA': '0.076', 'GC': '0.055', 'AC': '0.051', 'CG': '0.016'}
+{'AA': '0.079', 'AC': '0.051', 'AG': '0.075', 'AT': '0.060', 'CA': '0.076', 'CC': '0.067', 'CG': '0.016', 'CT': '0.074', 'GA': '0.062', 'GC': '0.055', 'GG': '0.068', 'GT': '0.051', 'TA': '0.047', 'TC': '0.061', 'TG': '0.077', 'TT': '0.080'}
 python nucleotide_count.py chr22.fna difrequency
 -
 Answer is dinucleotide as key and frequency as the value
-{'TG': '0.063', 'GC': '0.055', 'CC': '0.055', 'CT': '0.062', 'TT': '0.070', 'GT': '0.062', 'TC': '0.062', 'CA': '0.062', 'AT': '0.070', 'TA': '0.070', 'AC': '0.062', 'CG': '0.055', 'AG': '0.063', 'GA': '0.063', 'AA': '0.070', 'GG': '0.056'}
+{'AA': '0.070', 'AC': '0.062', 'AG': '0.063', 'AT': '0.070', 'CA': '0.062', 'CC': '0.055', 'CG': '0.055', 'CT': '0.062', 'GA': '0.063', 'GC': '0.055', 'GG': '0.056', 'GT': '0.062', 'TA': '0.070', 'TC': '0.062', 'TG': '0.063', 'TT': '0.070'}
 python nucleotide_count.py random_seq_1M.fa difrequency
 -
 Compare the two lists of frequencies. What are the differences? Can you provide a biological explanation for these differences?:
