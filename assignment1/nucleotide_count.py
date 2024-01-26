@@ -38,7 +38,7 @@ def count_nucleotides(fasta: dict) -> dict:
                 base_count['C'] += 1
             case _:
                 continue
-    return base_count
+    return dict(sorted(base_count.items()))
 
 def count_dinucleotides(fasta: dict) -> dict:
     """ Counts dinucleotides & returns a dict of counts """
@@ -57,7 +57,7 @@ def count_dinucleotides(fasta: dict) -> dict:
     for dinucleotide in list(dinucleotide_count.keys()):
         if any(nucleotide in dinucleotide for nucleotide in non_canonical_nucleotides):
             del dinucleotide_count[dinucleotide]
-    return dinucleotide_count
+    return dict(sorted(dinucleotide_count.items()))
 
 def calculate_nucleotide_frequency(base_count: dict) -> dict:
     """Calculate nucleotide frequencies from base counts"""
@@ -68,7 +68,7 @@ def calculate_nucleotide_frequency(base_count: dict) -> dict:
     nucleotide_frequencies['T']: str = "{:.3f}".format(base_count['T'] / total_valid_basecount)
     nucleotide_frequencies['G']: str = "{:.3f}".format(base_count['G'] / total_valid_basecount)
     nucleotide_frequencies['C']: str = "{:.3f}".format(base_count['C'] / total_valid_basecount)
-    return nucleotide_frequencies
+    return dict(sorted(nucleotide_frequencies.items()))
 
 def calculate_dinucleotide_frequency(dinucleotide_count: dict) -> dict:
     """ Calculate dinucleotide frequencies"""
@@ -76,7 +76,7 @@ def calculate_dinucleotide_frequency(dinucleotide_count: dict) -> dict:
     total_valid_dinucleotide_count: int = sum(dinucleotide_count.values())
     for dinucleotide, count in dinucleotide_count.items():
         dinucleotide_frequency[dinucleotide]: str = "{:.3f}".format(count / total_valid_dinucleotide_count)
-    return dinucleotide_frequency
+    return dict(sorted(dinucleotide_frequency.items()))
 
 fasta = FASTA_IO(FILE)
 nucleotide_count = count_nucleotides(fasta)
