@@ -85,12 +85,17 @@ dinucleotide_count = count_dinucleotides(fasta)
 dinucleotide_frequency = calculate_dinucleotide_frequency(dinucleotide_count)
 
 if PRINTOUT == 'count':
-    print(nucleotide_count)
+    for nucleotide, count in nucleotide_count.items():
+        print(f'{nucleotide}:{count}')
 elif PRINTOUT == 'frequency':
-    print(nucleotide_frequency)
+    for nucleotide, frequency in nucleotide_frequency.items():
+        print(f'{nucleotide}:{frequency}')
 elif PRINTOUT == 'dicount':
-    print(dinucleotide_count)
+    for dinucleotide, count in dinucleotide_count.items():
+        print(f'{dinucleotide}:{count}')
 elif PRINTOUT == 'difrequency':
-    print(dinucleotide_frequency)
+    print('Dinucleotide Frequencies')
+    for dinucleotide, frequency in dinucleotide_frequency.items():
+        print(f'{dinucleotide}:{frequency}')
 else:
     raise Exception('Provide valid printout option')

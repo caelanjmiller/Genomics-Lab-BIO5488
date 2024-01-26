@@ -25,10 +25,14 @@ Answer is dinucleotide as key and frequency as the value
 python nucleotide_count.py random_seq_1M.fa difrequency
 -
 Compare the two lists of frequencies. What are the differences? Can you provide a biological explanation for these differences?:
-{Explanation}
+Despite having the same relative nucleotide frequencies, the differences that occur in the biology sequence
+might result from biases towards promoter elements, regions near telomeres, CDS regions (potentially GC rich) that are 
+biologically relevant. Contrast this with the random sequence and you do not have the same considerations (evolutionarily)
+as the frequencies merely act as weights/probabilities for a given nucleotide. 
 -
 Comments:
-{Things that went wrong or you cannot figure out}
+N/A
 -
 Suggestions:
-{What programming and/or genomics topics should the TAs cover in the next class that would have made this assignment go smoother?}
+I think showing other students how to use version control (e.g. git) could be useful so 
+changes are incremental
