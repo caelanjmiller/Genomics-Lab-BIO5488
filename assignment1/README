@@ -6,26 +6,60 @@ python nucleotide_count.py <FASTA> <PRINTOUT>
 python create_nucleotide_sequence.py <LENGTH> <A FREQ> <C FREQ> <G FREQ> <T FREQ> <FASTA OUTPUT NAME>
 -
 Question 1:
-Answer is nucleotide as key and the count as the value
-{'A': 10382214, 'C': 9160652, 'G': 9246186, 'T': 10370725}
+A:10382214
+C:9160652
+G:9246186
+T:10370725
 python nucleotide_count.py chr22.fna count
 -
 Question 2:
-Answer is nucleotide as key and the frequency as the value
-{'A': '0.265', 'C': '0.234', 'G': '0.236', 'T': '0.265'}
+A:0.265
+C:0.234
+G:0.236
+T:0.265
 python nucleotide_count.py chr22.fna frequency
 -
 Question 3:
-Answer is dinucleotide as key and frequency as the value
-{'AA': '0.079', 'AC': '0.051', 'AG': '0.075', 'AT': '0.060', 'CA': '0.076', 'CC': '0.067', 'CG': '0.016', 'CT': '0.074', 'GA': '0.062', 'GC': '0.055', 'GG': '0.068', 'GT': '0.051', 'TA': '0.047', 'TC': '0.061', 'TG': '0.077', 'TT': '0.080'}
+Dinucleotide Frequencies
+AA:0.079
+AC:0.051
+AG:0.075
+AT:0.060
+CA:0.076
+CC:0.067
+CG:0.016
+CT:0.074
+GA:0.062
+GC:0.055
+GG:0.068
+GT:0.051
+TA:0.047
+TC:0.061
+TG:0.077
+TT:0.080
 python nucleotide_count.py chr22.fna difrequency
 -
-Answer is dinucleotide as key and frequency as the value
-{'AA': '0.070', 'AC': '0.062', 'AG': '0.063', 'AT': '0.070', 'CA': '0.062', 'CC': '0.055', 'CG': '0.055', 'CT': '0.062', 'GA': '0.063', 'GC': '0.055', 'GG': '0.056', 'GT': '0.062', 'TA': '0.070', 'TC': '0.062', 'TG': '0.063', 'TT': '0.070'}
+Dinucleotide Frequencies
+AA:0.070
+AC:0.062
+AG:0.063
+AT:0.070
+CA:0.062
+CC:0.055
+CG:0.055
+CT:0.062
+GA:0.063
+GC:0.055
+GG:0.056
+GT:0.062
+TA:0.070
+TC:0.062
+TG:0.063
+TT:0.070
 python nucleotide_count.py random_seq_1M.fa difrequency
 -
 Compare the two lists of frequencies. What are the differences? Can you provide a biological explanation for these differences?:
-Despite having the same relative nucleotide frequencies, the differences that occur in the biology sequence
+Despite having the same relative nucleotide frequencies, the differences that occur between chr22 & random_seq
 might result from biases towards promoter elements, regions near telomeres, CDS regions (potentially GC rich) that are 
 biologically relevant. Contrast this with the random sequence and you do not have the same considerations (evolutionarily)
 as the frequencies merely act as weights/probabilities for a given nucleotide. 
@@ -35,4 +69,4 @@ N/A
 -
 Suggestions:
 I think showing other students how to use version control (e.g. git) could be useful so 
-changes are incremental
+changes are incremental and not lost upon disconnection from cluster 
