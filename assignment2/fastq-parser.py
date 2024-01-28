@@ -43,10 +43,42 @@ def count_nucleotides(fastq: dict) -> dict:
             del nucleotide_count[base]
     return dict(sorted(nucleotide_count.items()))
 
+def count_dinucleotides(fastq: dict) -> dict:
+    """ Counts dinucleotides & returns a dict of counts """
+    dinucleotides: list = []
+    for read in fastq.values():
+        for sequence in read.keys():
+            for nucleotide_index in range(len(sequence) - 1):
+                dinucleotide_slice: str = "".join(sequence[nucleotide_index:(nucleotide_index + 2)])
+                dinucleotides.append(dinucleotide_slice)
+    dinucleotide_count: dict = dict(Counter(dinucleotides))
+    non_canonical_nucleotides: list = ['Y', 'N', 'W', 'R', 'B', 'H', 'V', 'S', 'K', 'D', 'M', 'U']
+    for dinucleotide in list(dinucleotide_count.keys()):
+        if any(nucleotide in dinucleotide for nucleotide in non_canonical_nucleotides):
+            del dinucleotide_count[dinucleotide]
+    return dict(sorted(dinucleotide_count.items()))
+
+def calculate_nucleotide_frequency() -> dict:
+    pass
+
+def calculate_dinucleotide_frequency(dinucleotide_count: dict) -> dict:
+    """ Calculate dinucleotide frequencies"""
+    dinucleotide_frequency: dict = {}
+    total_valid_dinucleotide_count: int = sum(dinucleotide_count.values())
+    for dinucleotide, count in dinucleotide_count.items():
+        dinucleotide_frequency[dinucleotide]: str = "{:.3f}".format(count / total_valid_dinucleotide_count)
+    return dict(sorted(dinucleotide_frequency.items()))
 
 fastq = FASTQ_IO(FILE)
 nucleotide_count = count_nucleotides(fastq)
+dinucleotide_count = count_dinucleotides(fastq)
+
+
+
 
 if PRINTOUT == 'count':
     for nucleotide, count in nucleotide_count.items():
         print(f'{nucleotide}:{count}')
+if PRINTOUT == 'dicount':
+    for dinucleotide, count in dinucleotide_count.items():
+        print(f'{dinucleotide}:{count}')
