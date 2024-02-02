@@ -39,7 +39,7 @@ def count_nucleotides(fastq: dict) -> dict:
         for sequence in read.keys():
             nucleotide_counter.update(Counter(sequence))
     nucleotide_count = dict(nucleotide_counter)
-    # Filter out non-canonical nucleotides from dinucleotide counts by iterating over list of dinucleotide keys ('AT', 'GC', etc) and removing them from dinucleotide count dictionary
+    # Filter out non-canonical nucleotides from nucleotide counts by iterating over list of nucleotide keys and removing them from nucleotide count dictionary
     non_canonical_nucleotides: list = [
         "Y",
         "N",
@@ -71,6 +71,7 @@ def count_dinucleotides(fastq: dict) -> dict:
                 )
                 dinucleotides.append(dinucleotide_slice)
     dinucleotide_count: dict = dict(Counter(dinucleotides))
+    # Filter out non-canonical nucleotides from dinucleotide counts by iterating over list of dinucleotide keys ('AT', 'GC', etc) and removing them from dinucleotide count dictionary
     non_canonical_nucleotides: list = [
         "Y",
         "N",
