@@ -58,6 +58,7 @@ def create_appended_fasta_sequence(fasta: dict, header: str) -> dict:
     mega_fasta[header] = sequence_str
     return mega_fasta
 
+
 def count_nucleotides(fasta: dict) -> dict:
     """Parse FASTA as dict and return dict containing counts of canonical nucleotides"""
     sequence_str: str = ""
@@ -171,8 +172,9 @@ elif PRINTOUT == "dicount":
     for dinucleotide, count in dinucleotide_count.items():
         print(f"{dinucleotide}:{count}")
 elif PRINTOUT == "difrequency":
-    print("Dinucleotide Frequencies")
     for dinucleotide, frequency in dinucleotide_frequency.items():
         print(f"{dinucleotide}:{frequency}")
 else:
     raise Exception("Provide valid printout option")
+
+# Caelan Miller - 2024
