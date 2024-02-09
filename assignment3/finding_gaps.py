@@ -120,7 +120,7 @@ def calculate_dinucleotide_frequency(dinucleotide_count: dict) -> dict:
     dinucleotide_frequency: dict = {}
     total_valid_dinucleotide_count: int = sum(dinucleotide_count.values())
     for dinucleotide, count in dinucleotide_count.items():
-        dinucleotide_frequency[dinucleotide]: str = "{:.3f}".format(
+        dinucleotide_frequency[dinucleotide] = "{:.3f}".format(
             count / total_valid_dinucleotide_count
         )
     return dict(sorted(dinucleotide_frequency.items()))
@@ -145,6 +145,7 @@ elif PRINTOUT == "difrequency":
     for dinucleotide, frequency in dinucleotide_frequency.items():
         print(f"{dinucleotide}:{frequency}")
 elif PRINTOUT == 'length':
-    print(f'Genome is {genome_length}bp')
+    for length in genome_length.values():
+        print(f'Genome is {length} bp')
 else:
     raise Exception("Provide valid printout option")
