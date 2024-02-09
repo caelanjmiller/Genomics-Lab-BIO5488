@@ -126,12 +126,13 @@ Part 3:
 
 -
 Question 7:
-Utilizing the non-redundant (nr) database ensures that you are not getting multiple hits for the same protein many different times in the same submitted organisms.
-The database has been set up in such a manner that each submitted reference genome/proteome has been 
+Utilizing the non-redundant (nr) database ensures that you are not getting multiple hits for the same protein many different times 
+in the same submitted organisms. The database has been set up in such a manner that each submitted reference 
+genome/proteome has been 
 
 -
 Question 8:
-{Number of hits}
+I got ~412 putative hits on 500 subject sequences with the BLOSUM62 Scoring Matrix
 
 -
 Question 9:
@@ -143,35 +144,35 @@ Torulaspora globosa
 
 -
 Question 10:
-I set my Max target sequences to 5000 and received ~280 putative hits with an e-value < 1 with the BLOSUM62 Scoring Matrix
+I set my Max target sequences to 500 and received ~417 putative hits with an e-value < 1 with the BLOSUM80 Scoring Matrix; I got more hits than with the BLOSUM62
+In theory, I should have gotten less hits, given that BLOSUM80 assumes more closely related alignments and thus would penalize
+for seqeuences that do not align (use of this matrix would assume prior knowledge/inference of evolutionary results [https://resources.qiagenbioinformatics.com/manuals/clcgenomicsworkbench/650/Use_scoring_matrices.html])
 
 -
 Question 11:
 Torulaspora globosa
-
--
-Question 12:
 902 - Max & Total Score
 60.30% Percent Identity
 
 -
+Question 12:
+698 & 806 - Max & Total Score
+74.10% Percent Identity
+-
 Question 13:
-I set my Max target sequences to 5000 and received ~375 putative hits with an e-value < 1 with the BLOSUM80 Scoring Matrix; I received more
-hits with this scoring matrix versus BLOSUM62 and this is due to the fact that BLOSUM62 is utilized for more
-distantly related alignments (i.e. more distantly related sequences), whereas BLOSUM80 is used for closely related alignments 
-(i.e. more closely related sequences). 
 
 -
 Question 14:
-{Explanation}
 
 -
 Question 15:
-I would expect the search time to be shorter as the 
+I would expect the search time to be longer as the search becomes more sensitive (shorter sequence substring to be searched) but the 
+actual search results that are returned are less specific (and potentially less biologically relevant)
 
 -
 Question 16:
-Not really; depends on query size and various scoring parameters
+This depends on query size and various scoring parameters but it is slow comparatively to potentially running 
+the BLAST+ binaries (with the various databases downloaded) on a dedicated server
 
 -
 Suggestions:
