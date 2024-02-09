@@ -1,7 +1,6 @@
 from sys import argv
 import os
 from collections import Counter
-import seaborn as sns
 
 FILE = argv[1]
 PRINTOUT = argv[2]
@@ -26,7 +25,7 @@ def FASTA_IO(FILE) -> dict:
         # Create list of lines from FASTA file & strip whitespace
         SEQUENCE: list = [line.strip() for line in open(FILE).readlines()]
         fasta: dict = {}
-        fasta[SEQUENCE[0].replace(">", "")] = "".join(SEQUENCE[1:])
+        fasta[SEQUENCE[0].replace(">", "")] = "".join(SEQUENCE[1:]).upper()
         return fasta
     else:
         raise Exception("Please provide a valid FASTA file")
@@ -125,3 +124,27 @@ def calculate_dinucleotide_frequency(dinucleotide_count: dict) -> dict:
             count / total_valid_dinucleotide_count
         )
     return dict(sorted(dinucleotide_frequency.items()))
+
+fasta = FASTA_IO(FILE)
+nucleotide_count = count_nucleotides(fasta)
+nucleotide_frequency = calculate_nucleotide_frequency(nucleotide_count)
+dinucleotide_count = count_dinucleotides(fasta)
+dinucleotide_frequency = calculate_dinucleotide_frequency(dinucleotide_count)
+genome_length = calculate_sequence_length(fasta)
+
+if PRINTOUT == "count":
+    for nucleotide, count in nucleotide_count.items():
+        print(f"{nucleotide}:{count}")
+elif PRINTOUT == "frequency":
+    for nucleotide, frequency in nucleotide_frequency.items():
+        print(f"{nucleotide}:{frequency}")
+elif PRINTOUT == "dicount":
+    for dinucleotide, count in dinucleotide_count.items():
+        print(f"{dinucleotide}:{count}")
+elif PRINTOUT == "difrequency":
+    for dinucleotide, frequency in dinucleotide_frequency.items():
+        print(f"{dinucleotide}:{frequency}")
+elif PRINTOUT == 'length':
+    print(f'Genome is {genome_length}bp')
+else:
+    raise Exception("Provide valid printout option")
