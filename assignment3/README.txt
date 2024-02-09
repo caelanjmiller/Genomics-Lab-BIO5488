@@ -21,12 +21,10 @@ bowtie2 --threads 16 -x chr22_index -U test-500k.fq -S hg38_chr22_alignment.sam 
 -
 Part 1:
 Question 1:
-{size of chromosome 22 in hg38 and CHM13}
 HG38: 50818468 bp
-HCM13 (T2T): 51324926 bp
+CHM13 (T2T): 51324926 bp
 -
 Question 2:
-{nucleotide frequencies for hg38 and CHM13}
 HG38
 A:0.265
 C:0.234
@@ -39,7 +37,6 @@ C:0.229
 G:0.230
 T:0.270
 -
-{dinucleotide frequencies for hg38 and CHM13}
 HG38
 AA:0.079
 AC:0.051
@@ -76,7 +73,6 @@ TC:0.064
 TG:0.077
 TT:0.077
 -
-{explanation}
 
 -
 Question 3:
@@ -89,15 +85,21 @@ Question 3:
 Part 2:
 Question 4:
 {number of mappable reads for hg38 and CHM13}
-HG38 - 
-CHM13 - 
--
-{number of non-mappable reads for hg38 and CHM13}
-HG38 - 
-CHM13 - 
--
-{number of uniquely-mapped reads for hg38 and CHM13}
+HG38:
+500000 reads; of these:
+  500000 (100.00%) were unpaired; of these:
+    133832 (26.77%) aligned 0 times
+    309685 (61.94%) aligned exactly 1 time
+    56483 (11.30%) aligned >1 times
+73.23% overall alignment rate
 
+CHM13:
+500000 reads; of these:
+  500000 (100.00%) were unpaired; of these:
+    101096 (20.22%) aligned 0 times
+    316543 (63.31%) aligned exactly 1 time
+    82361 (16.47%) aligned >1 times
+79.78% overall alignment rate
 -
 {exploration of similarities/differences}
 
@@ -120,48 +122,56 @@ Question 6:
 
 -
 Part 3:
-{time for initial BLAST job}
-
--
-Question 1:
-{Explanation}
-
--
-Question 2:
-{Number of hits}
-
--
-Question 3:
-{Genus species, 
-Score, % identity}
-
--
-Question 4:
-{Number of hits, explanation}
-
--
-Question 5:
-{Genus species}
-
--
-Question 6:
-{Score, % identity}
+~ 2 minutes
 
 -
 Question 7:
-{Number of hits, explanation}
+Utilizing the non-redundant (nr) database ensures that you are not getting multiple hits for the same protein many different times in the same submitted organisms.
+The database has been set up in such a manner that each submitted reference genome/proteome has been 
 
 -
 Question 8:
-{Explanation}
+{Number of hits}
 
 -
 Question 9:
-{Answer, Explanation}
+{Genus species, 
+Score, % identity}
+Torulaspora globosa
+871 - Max & Total Score
+60.44% Percent Identity
 
 -
 Question 10:
-{}
+I set my Max target sequences to 5000 and received ~280 putative hits with an e-value < 1 with the BLOSUM62 Scoring Matrix
+
+-
+Question 11:
+Torulaspora globosa
+
+-
+Question 12:
+902 - Max & Total Score
+60.30% Percent Identity
+
+-
+Question 13:
+I set my Max target sequences to 5000 and received ~375 putative hits with an e-value < 1 with the BLOSUM80 Scoring Matrix; I received more
+hits with this scoring matrix versus BLOSUM62 and this is due to the fact that BLOSUM62 is utilized for more
+distantly related alignments (i.e. more distantly related sequences), whereas BLOSUM80 is used for closely related alignments 
+(i.e. more closely related sequences). 
+
+-
+Question 14:
+{Explanation}
+
+-
+Question 15:
+I would expect the search time to be shorter as the 
+
+-
+Question 16:
+Not really; depends on query size and various scoring parameters
 
 -
 Suggestions:
