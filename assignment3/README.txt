@@ -73,7 +73,13 @@ TC:0.064
 TG:0.077
 TT:0.077
 -
-
+The nucleotide and dinucleotide frequencies of the two assemblies are relatively similar (this makes sense given they are both assemblies of the human genome!). However, 
+where they mainly differ is the frequency of thymine (T), adenine (A) & guanine (G) and the respective dinucleotides that contain these nucleotides.
+The CHM13 assembly (aka T2T [https://www.science.org/doi/10.1126/science.abj6987]) aimed to fill in the gaps seen in HG38 (represented by N), ultimately correcting many of the sequencing errors in the prior assembly and 
+introducing resolved sequence space. The differences between the two assemblies as aforementioned with HG38 containing a lot of gaps (N), and since N is just
+any nucleotide identity, any resolution on the actual identity of those gapped sequences will influence the frequencies. On an additional note, with the new sequence resolution near
+telomeric regions (which are known by a consensus sequence of (TTAGGG)n [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC120798/]), this may be the reason
+why one would see an increase/difference in the frequencies of three aforementioned nucleotides (A, G, T)
 -
 Question 3:
 {number of gaps in hg38 and CHM13}
