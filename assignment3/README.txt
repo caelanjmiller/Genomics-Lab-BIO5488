@@ -17,7 +17,13 @@ bowtie2-build hg38-chr22.fa hg38-chr22-index
 bowtie2 --threads 16 -x chr22_index -U test-500k.fq -S hg38_chr22_alignment.sam 2> hg38_chr22_alignment_report.txt
 -
 {your commands with specific file names for identifying duplicate reads with samtools}
+# Collates read information, fixes/repairs read information & sorts reads 
+samtools collate -@ 4 -O -u hg38_chr22.sam | samtools fixmate -@ 4 -m -u - - | samtools sort -@ 4 -u -o hg38_chr22_positionsort.sam
+samtools collate -@ 4 -O -u t2t_chr22.sam | samtools fixmate -@ 4 -m -u - - | samtools sort -@ 4 -u -o t2t_chr22_positionsort.sam
 
+# Marks duplicates in sorted bam and outputs similar stats to MarkDuplicates (Picard) [https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard]
+samtools markdup -@ 4 -f hg38_chr22_stats_sam.txt -S -d 2500 --mode s --include-fails hg38_chr22_positionsort.sam hg38_chr22_markdup.sam
+samtools markdup -@ 4 -f t2t_chr22_stats_sam.txt -S -d 2500 --mode s --include-fails t2t_chr22_positionsort.sam t2t_chr22_markdup.sam
 -
 Part 1:
 Question 1:
@@ -108,7 +114,9 @@ CHM13:
 79.78% overall alignment rate
 -
 {exploration of similarities/differences}
-
+For CHM13, I had a better overall alignment of my sequencing reads to the assembly than HG38. This is likely due to the 
+aforementioned sequence gap filling that occurred with this assembly so the actual sequence space that could be mapped back with 
+reads is significantly larger (this is most apparent in the nearly 7% reduction in nonmapped reads (aligned 0 times)). 
 -
 Question 5:
 {percent of uniquely-mapped reads for hg38 and CHM13}
@@ -122,7 +130,45 @@ Question 5:
 -
 Question 6:
 {fraction of de-duplicated reads in total mappable reads for hg38 and CHM13}
+-T2T-
+COMMAND: samtools markdup -@ 4 -f t2t_chr22_stats_sam.txt -S -d 2500 --mode s --include-fails t2t_chr22_positionsort.sam t2t_chr22_markdup.sam
+READ: 500000
+WRITTEN: 500000
+EXCLUDED: 101096
+EXAMINED: 398904
+PAIRED: 4
+SINGLE: 398900
+DUPLICATE PAIR: 0
+DUPLICATE SINGLE: 96059
+DUPLICATE PAIR OPTICAL: 0
+DUPLICATE SINGLE OPTICAL: 67
+DUPLICATE NON PRIMARY: 2
+DUPLICATE NON PRIMARY OPTICAL: 0
+DUPLICATE PRIMARY TOTAL: 96059
+DUPLICATE TOTAL: 96061
+ESTIMATED_LIBRARY_SIZE: 0
 
+-HG38-
+COMMAND: samtools markdup -@ 4 -f hg38_chr22_stats_sam.txt -S -d 2500 --mode s --include-fails hg38_chr22_positionsort.sam hg38_chr22_markdup.sam
+READ: 500000
+WRITTEN: 500000
+EXCLUDED: 133832
+EXAMINED: 366168
+PAIRED: 8
+SINGLE: 366160
+DUPLICATE PAIR: 2
+DUPLICATE SINGLE: 90980
+DUPLICATE PAIR OPTICAL: 2
+DUPLICATE SINGLE OPTICAL: 65
+DUPLICATE NON PRIMARY: 0
+DUPLICATE NON PRIMARY OPTICAL: 0
+DUPLICATE PRIMARY TOTAL: 90982
+DUPLICATE TOTAL: 90982
+ESTIMATED_LIBRARY_SIZE: 0
+
+Looking at the stat read-outs for samtools markdup, I would calculate the % of unique mapped reads out of total mappable reads as:
+[T2T] 398900 (deduplicated single reads) / 500000 (total amount of reads) = .7978
+[HG38] 366160 (deduplicated single reads) / 500000 (total amount of reads) = .73232
 -
 {comparison}
 
