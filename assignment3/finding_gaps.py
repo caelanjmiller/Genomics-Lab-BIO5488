@@ -1,6 +1,10 @@
 from sys import argv
 import os
+import math
+import re
 from collections import Counter
+import matplotlib.pyplot as plt
+from pathlib import Path
 
 FILE = argv[1]
 PRINTOUT = argv[2]
@@ -109,7 +113,7 @@ def calculate_nucleotide_frequency(nucleotide_count: dict) -> dict:
     nucleotide_frequency: dict = {}
     total_valid_dinucleotide_count: int = sum(nucleotide_count.values())
     for nucleotide, count in nucleotide_count.items():
-        nucleotide_frequency[nucleotide]: str = "{:.3f}".format(
+        nucleotide_frequency[nucleotide] = "{:.3f}".format(
             count / total_valid_dinucleotide_count
         )
     return dict(sorted(nucleotide_frequency.items()))
@@ -125,12 +129,49 @@ def calculate_dinucleotide_frequency(dinucleotide_count: dict) -> dict:
         )
     return dict(sorted(dinucleotide_frequency.items()))
 
+
+def find_gaps(fasta: dict) -> list:
+    """Find gaps (defined by N) in a provided FASTA sequence and return a list of each gapped sequence (string of Ns)"""
+    n_gaps: list = []
+    # Iterate through FASTA dict for sequence string
+    for header, sequence in fasta.items():
+        # Use regular expressions to find occurrences of N & create a tuple of start index & stop index
+        for gap in re.finditer(r"N+", sequence):
+            n_gap_indices: tuple = tuple((gap.start(), gap.end()))
+            n_gaps.append(n_gap_indices)
+    return n_gaps
+
+
+def find_gap_lengths(gaps: list) -> list:
+    """Calculate sequence length of each gap"""
+    gap_lengths: list = []
+    for gap in gaps:
+        start, stop = gap
+        gap_length: int = int(stop - start)
+        gap_lengths.append(gap_length)    
+    return gap_lengths
+
+
+def create_gap_length_histogram(gap_lengths: list, FILE):
+    """Create basic histogram of gap length for a given FASTA"""
+    FILENAME: str = os.path.basename(FILE).split(".fasta")[0]
+    current_directory: Path = Path.cwd()
+    log10_gap_lengths: list = [math.log10(gap) for gap in gap_lengths]
+    plt.hist(log10_gap_lengths, bins=20)
+    plt.ylabel("Frequency")
+    plt.xlabel("Gap Length (bp) [log10]")
+    plt.title(f"Gap Lengths in {FILENAME} Assembly")
+    plt.savefig(f"{current_directory}/{FILENAME}_gap_distribution.png")
+
+
 fasta = FASTA_IO(FILE)
 nucleotide_count = count_nucleotides(fasta)
 nucleotide_frequency = calculate_nucleotide_frequency(nucleotide_count)
 dinucleotide_count = count_dinucleotides(fasta)
 dinucleotide_frequency = calculate_dinucleotide_frequency(dinucleotide_count)
 genome_length = calculate_sequence_length(fasta)
+gaps = find_gaps(fasta)
+gap_lengths = find_gap_lengths(gaps)
 
 if PRINTOUT == "count":
     for nucleotide, count in nucleotide_count.items():
@@ -144,8 +185,15 @@ elif PRINTOUT == "dicount":
 elif PRINTOUT == "difrequency":
     for dinucleotide, frequency in dinucleotide_frequency.items():
         print(f"{dinucleotide}:{frequency}")
-elif PRINTOUT == 'length':
+elif PRINTOUT == "length":
     for length in genome_length.values():
-        print(f'Genome is {length} bp')
+        print(f"Genome is {length} bp")
+elif PRINTOUT == "graph":
+    create_gap_length_histogram(gap_lengths, FILE)
+    print(len(gap_lengths))
+    gap_counter: dict = dict(Counter(gap_lengths))
+    print(f'Length(bp): Count')
+    for length, count in gap_counter.items():
+        print(f'{length}: {count}')
 else:
     raise Exception("Provide valid printout option")

@@ -9,6 +9,9 @@ python3 finding_gaps.py t2t-chr22.fa frequency
 # Dinucleotide Frequencies
 python3 finding_gaps.py hg38-chr22.fa difrequency
 python3 finding_gaps.py t2t-chr22.fa difrequency
+# Generation of Gap Length Histograms
+python3 finding_gaps.py hg38_chr22.fa graph
+python3 finding_gaps.py t2t_chr22.fa graph
 -
 {your command with specific file names for building index files and aligning with bowtie2}
 bowtie2-build t2t-chr22.fa t2t-chr22-index
@@ -89,10 +92,26 @@ why one would see an increase/difference in the frequencies of three aforementio
 -
 Question 3:
 {number of gaps in hg38 and CHM13}
-
+HG38: 49 gaps
+CHM13: 0 gaps
 -
 {please list all gap lengths from hg38 and CHM13 that you found here}
-
+CHM13 aka T2T: 0 gaps
+HG38:
+Length: Count
+10510000:1
+50000:18
+100:15
+7856:1
+2477:1
+100000:2
+23171:1
+1131:1
+557:1
+1:5
+494:1
+1500:1
+10000:1
 -
 Part 2:
 Question 4:
@@ -120,13 +139,19 @@ reads is significantly larger (this is most apparent in the nearly 7% reduction 
 -
 Question 5:
 {percent of uniquely-mapped reads for hg38 and CHM13}
-
+[T2T] 316543 / 500000 = .6331
+[HG38] 309685 / 500000 = .6194
 -
 {percent of multi-mapped reads for hg38 and CHM13}
-
+[T2T] 82361 / 500000 = .1647
+[HG38] 56483 / 500000 = .1130
 -
 {explanation}
-
+I think the explanation for the increased percentage of both uniquely and multimapped reads are due to the gapless nature of 
+the T2T assembly. Having defined sequences allows bowtie2 to map the reads back onto the reference (the respective assembly) with
+greater confidence and accuracy and from the publication about T2T (linked above), quite a few coding regions were potentially elucidated
+with the new assembly and it's possible they share some similarity in already established (sequenced) regions, leading to more multi mapped reads.
+The addition of new coding regions as well elucidates new genomic regions, allowing for a greater increase of uniquely mapped reads as well
 -
 Question 6:
 {fraction of de-duplicated reads in total mappable reads for hg38 and CHM13}
@@ -166,12 +191,15 @@ DUPLICATE PRIMARY TOTAL: 90982
 DUPLICATE TOTAL: 90982
 ESTIMATED_LIBRARY_SIZE: 0
 
-Looking at the stat read-outs for samtools markdup, I would calculate the % of unique mapped reads out of total mappable reads as:
-[T2T] 398900 (deduplicated single reads) / 500000 (total amount of reads) = .7978
-[HG38] 366160 (deduplicated single reads) / 500000 (total amount of reads) = .73232
+Looking at the stat read-outs for samtools markdup, I would calculate the % of deduplicated reads out of total mappable reads as:
+[T2T]  398900 (total number of deduplicated single reads) / 500000 (total amount of reads) = .7978
+[HG38] 366160 (total number of deduplicated single reads) / 500000 (total amount of reads )= .7323
 -
 {comparison}
-
+Again, as I have noticed with the bowtie2 alignment even prior to the deduplication processing via samtools, I 
+can tell that I obtained more overall mapped reads for the T2T assembly. On the sequencing preparation side, it could be likely as well
+that there is variation with library generation and this could lead to having overall bad (duplicated reads, sequencing errors) read alignments
+back onto the reference genome assembly
 -
 Part 3:
 ~ 2 minutes
@@ -180,7 +208,9 @@ Part 3:
 Question 7:
 Utilizing the non-redundant (nr) database ensures that you are not getting multiple hits for the same protein many different times 
 in the same submitted organisms. The database has been set up in such a manner that each submitted reference 
-genome/proteome has been 
+genome/proteome has been submitted once and is of the lowest taxonomic classification possible. This is likely to prevent database biasing towards
+the number of submitted reference genomes/isolates (e.g. E.coli K12 has a very large number of submitted assemblies but only 1 is 
+a reference utilized in BLAST results, unless it is a different strain/isolate).
 
 -
 Question 8:
@@ -198,7 +228,7 @@ Torulaspora globosa
 Question 10:
 I set my Max target sequences to 500 and received ~417 putative hits with an e-value < 1 with the BLOSUM80 Scoring Matrix; I got more hits than with the BLOSUM62
 In theory, I should have gotten less hits, given that BLOSUM80 assumes more closely related alignments and thus would penalize
-for seqeuences that do not align (use of this matrix would assume prior knowledge/inference of evolutionary results [https://resources.qiagenbioinformatics.com/manuals/clcgenomicsworkbench/650/Use_scoring_matrices.html])
+for sequences that do not align (use of this matrix would assume prior knowledge/inference of evolutionary results [https://resources.qiagenbioinformatics.com/manuals/clcgenomicsworkbench/650/Use_scoring_matrices.html])
 
 -
 Question 11:
@@ -212,9 +242,15 @@ Question 12:
 74.10% Percent Identity
 -
 Question 13:
-
+Setting my Max target sequence to 500 and lowering the gap costs to 7, I received ~396 hits on 321 subject sequences with an e-value < 1 with the BLOSUM62
+Scoring Matrix (compared to ~412 hits on 346 subject sequences). In theory, I believed I should have gotten more hits as I am reducing the overall
+gap penalty score, which coupled with a scoring matrix that assumes distantly related proteins (BLOSUM62), would return more hits as 
+the criteria for an optimal alignment (according to the algorithm parameters rather than being biologically relevant) has been reduced
 -
 Question 14:
+Changing the gap penalty parameters allows for orthologs (especially when using the BLOSUM62 scoring matrix - used for distant alignments), that have higher gaps to
+potentially obtain higher overall scores (because of lower penalty against their overall alignment score) 
+and thus pop up higher on the returned subject list
 
 -
 Question 15:
@@ -223,7 +259,7 @@ actual search results that are returned are less specific (and potentially less 
 
 -
 Question 16:
-This depends on query size and various scoring parameters but it is slow comparatively to potentially running 
+Yes, but this depends on query size and various scoring parameters but it is very slow compared to potentially running 
 the BLAST+ binaries (with the various databases downloaded) on a dedicated server
 
 -
