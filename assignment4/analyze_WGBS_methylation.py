@@ -1,15 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-Python script to parse methylation .bed files & returns:
-1. BED File of CpG methylation for a user provided whole genome bisulfite sequence (WGBS) BED file
-2. Plots for distribution of CpG methylation levels
-3. Plots for distribution of read coverage for all CpGs [0-100X]
-4. Print CpG fraction with 0X read coverage
-
-Usage: python3 analyze_WGBS_methylation.py <WGBS BED FILE> <CHR HEADER> <PRINTOUT>
-"""
-
 from sys import argv, exit
 from pathlib import Path
 import matplotlib.pyplot as plt
@@ -46,5 +36,14 @@ def calculate_CpG_methylation_levels(bed: dict) -> dict:
     pass
 
 
-if len(argv) != 3:
-    exit(__doc__)
+if len(argv) != 4:
+    docstring = (
+        f"Python script to parse methylation .bed files & returns:\n"
+        f"1. BED File of CpG methylation for a user provided whole genome bisulfite sequence (WGBS) BED file\n"
+        f"2. Plots for distribution of CpG methylation levels\n"
+        f"3. Plots for distribution of read coverage for all CpGs [0-100X]\n"
+        f"4. Print CpG fraction with 0X read coverage\n"
+        f"Usage: python3 analyze_WGBS_methylation.py <WGBS BED FILE> <CHR HEADER> <PRINTOUT>"
+    )
+    print(docstring)
+    exit(1)
