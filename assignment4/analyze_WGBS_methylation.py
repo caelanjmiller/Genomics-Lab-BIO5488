@@ -14,7 +14,7 @@ PRINTOUT = argv[2]
 class Bed_Row:
     def __init__(
         self,
-        chromosome_number: int,
+        chromosome_number: str,
         start_coordinate: int,
         stop_coordinate: int,
         as_c: int,
@@ -28,9 +28,17 @@ class Bed_Row:
 
     def calculate_CpG_methylation_levels(self):
         """Calculate CpG methylation levels from cytosine & thymine ratios"""
-        self.methylation_level: float = round((self.as_c / (self.as_c + self.as_t)), 3)
+        if self.as_c == 0:
+            self.methylation_level: float = float(0)
+        else:
+            self.methylation_level: float = round(
+                (self.as_c / (self.as_c + self.as_t)), 3
+            )
 
-    def __str__(self) -> str:
+    def __repr__(self):
+        return f"Bed_Row({self.chromosome_number}, {self.start_coordinate}, {self.stop_coordinate}, {self.as_c}, {self.as_t}, {self.methylation_level})"
+
+    def __str__(self):
         return (
             f"Chromosome: {self.chromosome_number}\n"
             f"Start Coordinate: {self.start_coordinate}\n"
@@ -49,26 +57,29 @@ def BED_IO(FILE) -> list:
                 file_contents: list = csv.reader(bed, delimiter="\t")
                 bed_coordinates: list = []
                 for element in file_contents:
+                    chromosome_number: str = str(element[0])
+                    start_coordinate: int = int(element[1])
+                    stop_coordinate: int = int(element[2])
+                    as_c: int = int(element[3])
+                    as_t: int = int(element[4])
                     bed_row: Bed_Row = Bed_Row(
-                        element[0],
-                        element[1],
-                        element[2],
-                        element[3],
-                        element[4],
+                        chromosome_number, start_coordinate, stop_coordinate, as_c, as_t
                     )
                     bed_coordinates.append(bed_row)
             return bed_coordinates
-        except Exception:
-            return f"Unable to open {bed_filename}"
+        except Exception as e:
+            return f"{e}"
+    else:
+        return f"Unable to open {bed_filename}"
 
 
-def assign_methylation_levels(bed_file: list):
+def assign_methylation_levels(bed_coordinates: list):
     """Calculate methylation levels for each of the rows of a WGBS BED file"""
-    for row in bed_file:
-        row.calculate_CpG_methylation_levels()
+    for bed_row in bed_coordinates:
+        bed_row.calculate_CpG_methylation_levels()
 
 
-def output_bed_file(bed_file: list, FILE):
+def output_CpG_bed_file(bed_coordinates: list, FILE):
     """Output BED file (tab-delimited) with CpG methylation - excludes 0X coverage"""
     # Get current directory
     current_directory: Path = Path.cwd()
@@ -76,33 +87,36 @@ def output_bed_file(bed_file: list, FILE):
     basename: str = os.path.basename(FILE).split(".bed")[0]
     with open(f"{current_directory}/{basename}_CpG_methylation.bed") as bed:
         # Exclude rows with 0X coverage
-        for row in bed_file:
-            if row.methylation == 0:
+        for bed_row in bed_coordinates:
+            if bed_row.methylation_level == 0:
                 continue
             else:
                 bed.write(
-                    f"{row.chromosome_number}\t{row.start_coordinate}\t{row.stop_coordinate}\t{row.methylation}\n"
+                    f"{bed_row.chromosome_number}\t{bed_row.start_coordinate}\t{bed_row.stop_coordinate}\t{bed_row.methylation_level}\n"
                 )
 
 
-if len(argv) != 2:
-    docstring = (
-        f"Python script to parse methylation .bed files & returns:\n"
-        f"1. BED File of CpG methylation for a user provided whole genome bisulfite sequence (WGBS) BED file\n"
-        f"2. Plots for distribution of CpG methylation levels\n"
-        f"3. Plots for distribution of read coverage for all CpGs [0-100X]\n"
-        f"4. Print CpG fraction with 0X read coverage\n"
-        f"Usage: python3 analyze_WGBS_methylation.py <WGBS BED FILE> <CHR HEADER> <PRINTOUT>"
-    )
-    print(docstring)
-    exit(1)
+def create_CpG_methylation_distribution(bed_coordinates: list, FILE):
+    """Create histogram of CpG methylation levels"""
+    current_directory: Path = Path.cwd()
+    basename: str = os.path.basename(FILE).split(".bed")[0]
+    CpG_methylation_nonzero: list = [
+        bed_row.methylation_level for bed_row in bed_coordinates
+    ]
+    plt.hist(CpG_methylation_nonzero, bins=20)
+    plt.ylabel("CpG Methylation Levels")
+    plt.xlabel("Frequency")
+    plt.title(f"CpG Methylation Levels in {basename}")
+    plt.savefig(f"{current_directory}/{basename}_methylation_distribution.png")
 
-bed_file: list = BED_IO(WBGS_BED)
+
+bed_coordinates: list = BED_IO(WBGS_BED)
+assign_methylation_levels(bed_coordinates)
 
 if PRINTOUT == "methylation-bed-file":
-    output_bed_file(bed_file)
+    output_CpG_bed_file(bed_coordinates, WBGS_BED)
 elif PRINTOUT == "methylation-level-plot":
-    pass
+    create_CpG_methylation_distribution(bed_coordinates, WBGS_BED)
 elif PRINTOUT == "read-coverage-plot":
     pass
 elif PRINTOUT == "zero-coverage":
@@ -115,3 +129,15 @@ else:
         f"read-coverage-plot : Create histogram of CpG read coverage\n"
         f"zero-coverage : Prints out fraction of CpGs with 0X read coverage\n"
     )
+
+if len(argv) != 3:
+    docstring = (
+        f"Python script to parse methylation .bed files & returns:\n"
+        f"1. BED File of CpG methylation for a user provided whole genome bisulfite sequence (WGBS) BED file\n"
+        f"2. Plots for distribution of CpG methylation levels\n"
+        f"3. Plots for distribution of read coverage for all CpGs [0-100X]\n"
+        f"4. Print CpG fraction with 0X read coverage\n"
+        f"Usage: python3 analyze_WGBS_methylation.py <WGBS BED FILE> <CHR HEADER> <PRINTOUT>"
+    )
+    print(docstring)
+    exit(1)
