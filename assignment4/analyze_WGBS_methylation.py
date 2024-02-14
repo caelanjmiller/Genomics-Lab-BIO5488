@@ -125,6 +125,7 @@ def create_CpG_read_coverage_distribution(bed_coordinates: list, FILE):
     """Create histogram of CpG read coverage"""
     current_directory: Path = Path.cwd()
     basename: str = os.path.basename(FILE).split(".bed")[0]
+    # Create list of bed_row coordinates with read coverage from 0 to 100X
     CpG_read_coverage: list = [
         bed_row.read_coverage
         for bed_row in bed_coordinates
@@ -135,6 +136,23 @@ def create_CpG_read_coverage_distribution(bed_coordinates: list, FILE):
     plt.ylabel("Frequency")
     plt.title(f"CpG Read Coverage in {basename}")
     plt.savefig(f"{current_directory}/{basename}_CpG_coverage_distribution.png")
+
+
+def calculate_CpG_fraction_zero_coverage(bed_coordinates: list, FILE):
+    """Calculate fraction of CpGs that have 0X read coverage & output result into a text file"""
+    current_directory: Path = Path.cwd()
+    basename: str = os.path.basename(FILE).split(".bed")[0]
+    total_CpG_count: int = len(bed_coordinates)
+    CpGs_zero_coverage: int = len(
+        [
+            bed_row.read_coverage
+            for bed_row in bed_coordinates
+            if bed_row.read_coverage == 0
+        ]
+    )
+    zero_coverage_fraction: float = round((CpGs_zero_coverage / total_CpG_count), 3)
+    with open(f"{current_directory}/{basename}_CpG_zero_fraction.txt", "w") as txt:
+        txt.write(f"Fraction of CpGs with 0X read coverage: {zero_coverage_fraction}")
 
 
 bed_coordinates: list = BED_IO(WBGS_BED)
@@ -148,7 +166,7 @@ elif PRINTOUT == "methylation-level-plot":
 elif PRINTOUT == "read-coverage-plot":
     create_CpG_read_coverage_distribution(bed_coordinates, WBGS_BED)
 elif PRINTOUT == "zero-coverage":
-    pass
+    calculate_CpG_fraction_zero_coverage(bed_coordinates, WBGS_BED)
 else:
     raise Exception(
         f"Provide valid printout option:\n"
