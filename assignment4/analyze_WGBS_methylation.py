@@ -35,8 +35,12 @@ class Bed_Row:
                 (self.as_c / (self.as_c + self.as_t)), 3
             )
 
+    def calculate_read_coverage(self):
+        """Calculate coverage of reads for CpGs at a given genomic location"""
+        self.read_coverage: int = self.as_c + self.as_t
+
     def __repr__(self):
-        return f"Bed_Row({self.chromosome_number}, {self.start_coordinate}, {self.stop_coordinate}, {self.as_c}, {self.as_t}, {self.methylation_level})"
+        return f"Bed_Row({self.chromosome_number}, {self.start_coordinate}, {self.stop_coordinate}, {self.as_c}, {self.as_t}, {self.methylation_level}, {self.base_coverage})"
 
     def __str__(self):
         return (
@@ -45,6 +49,7 @@ class Bed_Row:
             f"Stop Coordinate: {self.stop_coordinate}\n"
             f"Times base called as C: {self.as_c}\n"
             f"Times base called as T: {self.as_t}\n"
+            f"Read Coverage: {self.base_coverage}\n"
         )
 
 
@@ -74,9 +79,15 @@ def BED_IO(FILE) -> list:
 
 
 def assign_methylation_levels(bed_coordinates: list):
-    """Calculate methylation levels for each of the rows of a WGBS BED file"""
+    """Assign methylation levels for each of the rows of a WGBS BED file"""
     for bed_row in bed_coordinates:
         bed_row.calculate_CpG_methylation_levels()
+
+
+def assign_read_coverage(bed_coordinates: list):
+    """Assign read coverage for each of the rows of WGBS BED file"""
+    for bed_row in bed_coordinates:
+        bed_row.calculate_read_coverage()
 
 
 def output_CpG_bed_file(bed_coordinates: list, FILE):
@@ -110,15 +121,32 @@ def create_CpG_methylation_distribution(bed_coordinates: list, FILE):
     plt.savefig(f"{current_directory}/{basename}_methylation_distribution.png")
 
 
+def create_CpG_read_coverage_distribution(bed_coordinates: list, FILE):
+    """Create histogram of CpG read coverage"""
+    current_directory: Path = Path.cwd()
+    basename: str = os.path.basename(FILE).split(".bed")[0]
+    CpG_read_coverage: list = [
+        bed_row.read_coverage
+        for bed_row in bed_coordinates
+        if bed_row.read_coverage in range(0, 101)
+    ]
+    plt.hist(CpG_read_coverage, bins=20)
+    plt.xlabel("CpG Read Coverage")
+    plt.ylabel("Frequency")
+    plt.title(f"CpG Read Coverage in {basename}")
+    plt.savefig(f"{current_directory}/{basename}_CpG_coverage_distribution.png")
+
+
 bed_coordinates: list = BED_IO(WBGS_BED)
 assign_methylation_levels(bed_coordinates)
+assign_read_coverage(bed_coordinates)
 
 if PRINTOUT == "methylation-bed-file":
     output_CpG_bed_file(bed_coordinates, WBGS_BED)
 elif PRINTOUT == "methylation-level-plot":
     create_CpG_methylation_distribution(bed_coordinates, WBGS_BED)
 elif PRINTOUT == "read-coverage-plot":
-    pass
+    create_CpG_read_coverage_distribution(bed_coordinates, WBGS_BED)
 elif PRINTOUT == "zero-coverage":
     pass
 else:
