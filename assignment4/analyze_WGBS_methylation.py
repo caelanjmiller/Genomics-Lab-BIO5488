@@ -85,7 +85,7 @@ def output_CpG_bed_file(bed_coordinates: list, FILE):
     current_directory: Path = Path.cwd()
     # Extract basename of BED file to use for new methylation bed file
     basename: str = os.path.basename(FILE).split(".bed")[0]
-    with open(f"{current_directory}/{basename}_CpG_methylation.bed") as bed:
+    with open(f"{current_directory}/{basename}_CpG_methylation.bed", "w") as bed:
         # Exclude rows with 0X coverage
         for bed_row in bed_coordinates:
             if bed_row.methylation_level == 0:
@@ -104,8 +104,8 @@ def create_CpG_methylation_distribution(bed_coordinates: list, FILE):
         bed_row.methylation_level for bed_row in bed_coordinates
     ]
     plt.hist(CpG_methylation_nonzero, bins=20)
-    plt.ylabel("CpG Methylation Levels")
-    plt.xlabel("Frequency")
+    plt.xlabel("CpG Methylation Levels")
+    plt.ylabel("Frequency")
     plt.title(f"CpG Methylation Levels in {basename}")
     plt.savefig(f"{current_directory}/{basename}_methylation_distribution.png")
 
