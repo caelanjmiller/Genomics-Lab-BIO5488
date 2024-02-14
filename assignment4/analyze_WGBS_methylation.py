@@ -165,7 +165,7 @@ if len(argv) != 3:
         f"2. Plots for distribution of CpG methylation levels\n"
         f"3. Plots for distribution of read coverage for all CpGs [0-100X]\n"
         f"4. Print CpG fraction with 0X read coverage\n"
-        f"Usage: python3 analyze_WGBS_methylation.py <WGBS BED FILE> <CHR HEADER> <PRINTOUT>"
+        f"Usage: python3 analyze_WGBS_methylation.py <WGBS BED FILE> <PRINTOUT>"
     )
     print(docstring)
     exit(1)
