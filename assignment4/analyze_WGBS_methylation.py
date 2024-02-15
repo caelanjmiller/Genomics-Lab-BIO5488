@@ -6,8 +6,17 @@ import matplotlib.pyplot as plt
 import os
 import csv
 
+
+"""
+Python script to parse methylation .bed files & returns:\n
+BED File of CpG methylation for a user provided whole genome bisulfite sequence (WGBS) BED file\n
+2. Plots for distribution of CpG methylation levels\n
+3. Plots for distribution of read coverage for all CpGs [0-100X]\n
+4. Print CpG fraction with 0X read coverage\n"
+Usage: python3 analyze_WGBS_methylation.py <WGBS BED FILE> <PRINTOUT>
+"""
+
 WBGS_BED = Path(argv[1])
-PRINTOUT = argv[2]
 
 
 # Create a class for each row in BED file
@@ -158,32 +167,11 @@ def calculate_CpG_fraction_zero_coverage(bed_coordinates: list, FILE):
 bed_coordinates: list = BED_IO(WBGS_BED)
 assign_methylation_levels(bed_coordinates)
 assign_read_coverage(bed_coordinates)
+output_CpG_bed_file(bed_coordinates, WBGS_BED)
+create_CpG_methylation_distribution(bed_coordinates, WBGS_BED)
+create_CpG_read_coverage_distribution(bed_coordinates, WBGS_BED)
+calculate_CpG_fraction_zero_coverage(bed_coordinates, WBGS_BED)
 
-if PRINTOUT == "methylation-bed-file":
-    output_CpG_bed_file(bed_coordinates, WBGS_BED)
-elif PRINTOUT == "methylation-level-plot":
-    create_CpG_methylation_distribution(bed_coordinates, WBGS_BED)
-elif PRINTOUT == "read-coverage-plot":
-    create_CpG_read_coverage_distribution(bed_coordinates, WBGS_BED)
-elif PRINTOUT == "zero-coverage":
-    calculate_CpG_fraction_zero_coverage(bed_coordinates, WBGS_BED)
-else:
-    raise Exception(
-        f"Provide valid printout option:\n"
-        f"methylation-bed-file : Create bed file of CpG methylation levels\n"
-        f"methylation-level-plot : Create histogram of CpG methylation levels"
-        f"read-coverage-plot : Create histogram of CpG read coverage\n"
-        f"zero-coverage : Prints out fraction of CpGs with 0X read coverage\n"
-    )
-
-if len(argv) != 3:
-    docstring = (
-        f"Python script to parse methylation .bed files & returns:\n"
-        f"1. BED File of CpG methylation for a user provided whole genome bisulfite sequence (WGBS) BED file\n"
-        f"2. Plots for distribution of CpG methylation levels\n"
-        f"3. Plots for distribution of read coverage for all CpGs [0-100X]\n"
-        f"4. Print CpG fraction with 0X read coverage\n"
-        f"Usage: python3 analyze_WGBS_methylation.py <WGBS BED FILE> <PRINTOUT>"
-    )
-    print(docstring)
+if len(argv) != 2:
+    print(__doc__)
     exit(1)
