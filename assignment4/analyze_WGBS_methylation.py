@@ -49,7 +49,7 @@ class Bed_Row:
         self.read_coverage: int = self.as_c + self.as_t
 
     def __repr__(self):
-        return f"Bed_Row({self.chromosome_number}, {self.start_coordinate}, {self.stop_coordinate}, {self.as_c}, {self.as_t}, {self.methylation_level}, {self.base_coverage})"
+        return f"Bed_Row({self.chromosome_number}, {self.start_coordinate}, {self.stop_coordinate}, {self.as_c}, {self.as_t}, {self.methylation_level}, {self.read_coverage})"
 
     def __str__(self):
         return (
@@ -63,6 +63,7 @@ class Bed_Row:
 
 
 def BED_IO(FILE) -> list:
+    """Parse in BED file & instantiate a Bed_Row object for each entry (row)"""
     extensions: str = ".bed"
     bed_filename: str = os.path.basename(FILE)
     if bed_filename.endswith(extensions):
@@ -126,7 +127,7 @@ def create_CpG_methylation_distribution(bed_coordinates: list, FILE):
     plt.hist(CpG_methylation_nonzero, bins=20)
     plt.xlabel("CpG Methylation Levels")
     plt.ylabel("Frequency")
-    plt.title(f"CpG Methylation Levels in {basename}")
+    plt.title(f"CpG Methylation Levels in {bed_coordinates[0].chromosome_number}")
     plt.savefig(f"{current_directory}/{basename}_methylation_distribution.png")
 
 
