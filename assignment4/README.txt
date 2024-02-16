@@ -1,7 +1,6 @@
-Assignment 5 Due Friday, February 21 at 10am
-
 Part 1.0
 {Command for running analyze_WGBS_methylation.py}
+python3 analyze_WGBS_methylation.py BGM_WGBS.bed 
 {Copy your output files BGM_WGBS_CpG_methylation.bed, BGM_WGBS_methylation_distribution.png, and BGM_WGBS_CpG_coverage_distribution.png to your submissions directory}
 -
 Question 1:
@@ -12,14 +11,19 @@ Question 2:
 -
 Question 2.1:
 {What fraction of the CpGs have 0X coverage?}
+0.084
 -
 Part 1.1
 {Command for creating a bed file with the average CpG methylation level in each CGI.}
-{Copy WGBS_CGI_methylation.bed to your submissions directory}
+# Create bed file for methylated CpGs that overlap with CGI intervals 
+bedtools intersect -a BGM_WGBS_CpG_methylation.bed -b CGI.bed -wb -sorted > CpG_CGI_overlap.bed
+# Create bed file with average methylation in each CGI
+bedtools groupby -i CpG_CGI_overlap.bed -g 5-8 -c 4 -o mean > WGBS_CGI_methylation.bed
 -
 Part 1.2
 {Command for plotting the distribution of average CGI methylation levels}
 {Copy analyze_CGI_methylation.py and WGBS_CGI_methylation_distribution.png to your submissions directory}
+python3 analyze_CGI_methylation.py WGBS_CGI_methylation.bed
 -
 Question 3:
 {What does DNA methylation look like for CpGs in CGIs? How does it compare to all the CpGs on chromosome 21?}
@@ -27,11 +31,20 @@ Question 3:
 Part 1.3.0
 Gene promoters
 {Command for generating the promoter bed file}
+python3 generate_promoters.py refGene.bed
 {Justification for promoter definition}
+So many sources [https://www.addgene.org/mol-bio-reference/promoters/, https://www.frontiersin.org/articles/10.3389/fbioe.2019.00305/full, amongst others] claim that promoter regions
+can range in length from 100 to 1000 base pairs. I chose 500 bp because it is the middle ground between these two lengths; 100 bp may be too short for some long genes (multiple exons spanning kbp of sequence space) 
+but 1000 bp may be too long for promoters in shorter genes. This approximation that I have taken is not comprehensive but aims to minimize losing out on either end of the spectrum in terms of capturing promoter
+regions.
 {Copy generate_promoters.py and refGene_promoters.bed to your submissions directory}
 -
 Promoter-CGI and non-promoter-CGI
 {Commands for generating promoter-CGI and non-promoter-CGI bed files}
+# Generating promoter-CGI
+bedtools intersect -a BGM_WGBS_CpG_methylation.bed -b refGene_promoters.bed -wb -sorted > promoter_CGI.bed
+# Generating non-promoter-CGI bed files
+bedtools intersect -a refGene.bed -b promoter_CGI.bed -v -sorted > non_promoter_CGI.bed
 {Justification for overlapping criteria}
 {Commands for calculating the average CpG methylation for each promoter-CGI and non-promoter-CGI}
 {Commands for running analyze_CGI_methylation.py on average_promoter_CGI_methylation.bed and average_non_promoter_CGI_methylation.bed}
@@ -47,40 +60,3 @@ Part 1.3.1
 Question 5:
 {What is a possible biological explanation for the difference in CpG frequencies?  Interpret your results from parts 1.3.0 and 1.3.1: what are the “simple rules” for describing regulation by DNA methylation in promoters?}
 -
-Part 2
-{Commands to calculate CGI RPKM methylation scores}
-{Command to generate the correlation plots}
-{Correlations for each comparison}
-{Justification for chosen correlation metric}
-{Copy compare_methylome_technologies.py, MeDIP_CGI_RPKM.bed, MRE_CGI_RPKM.bed MeDIP_CGI_RPKM_vs_MRE_CGI_RPKM.png, MeDIP_CGI_RPKM_vs_WGBS_CGI_methylation.png, and MRE_CGI_RPKM_vs_WGBS_CGI_methylation.png to your submissions directory}
--
-Question 6:
-{How do MeDIP-seq and methylation correlate? How do MRE-seq and methylation correlate? How do MeDIP-seq and MRE-seq correlate?}
--
-Outliers
-{Answers to outlier questions}
-{If applicable: correlations for each comparison}
-{If applicable: copy the updated figures to your submissions directory}
--
-Comments:
-{Things that went wrong or you can not figure out}
--
-Suggestions:
-{What programming and/or genomics topics should the TAs cover in the next class that would have made this assignment go smoother?}
--
-Extra credit
-{Commands for running bed_reads_RKPM.pl}
-{Command for running analyze_H3K4me3_scores.py}
-{Copy analyze_H3K4me3_scores.py, H3K4me3_RPKM_promoter_CGI.bed, H3K4me3_RPKM_non_promoter_CGI.bed, and H3K4me3_RPKM_promoter_CGI_and_H3K4me3_RPKM_non_promoter_CGI.png}
--
-Question EC.1:
-{How does the H3K4me3 signal differ in promoter-CGIs and non-promoter-CGIs?}
--
-Question EC.2:
-{What are some better alternatives to model MeDIP-seq data and MRE-seq data instead of using RPKM? Explain.}
--
-Question EC.3:
-{What would be a better way to compare H3K4me3 values instead of using boxplots? Explain.}
--
-
-
