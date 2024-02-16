@@ -144,7 +144,7 @@ def create_CpG_read_coverage_distribution(bed_coordinates: list, FILE):
     plt.hist(CpG_read_coverage, bins=20)
     plt.xlabel("CpG Read Coverage")
     plt.ylabel("Frequency")
-    plt.title(f"CpG Read Coverage in {basename}")
+    plt.title(f"CpG Read Coverage in {bed_coordinates[0].chromosome_number}")
     plt.savefig(f"{current_directory}/{basename}_CpG_coverage_distribution.png")
 
 
