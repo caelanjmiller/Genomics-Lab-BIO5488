@@ -34,24 +34,30 @@ Gene promoters
 python3 generate_promoters.py refGene.bed
 {Justification for promoter definition}
 So many sources [https://www.addgene.org/mol-bio-reference/promoters/, https://www.frontiersin.org/articles/10.3389/fbioe.2019.00305/full, https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6848157/, amongst others] claim that promoter regions
-can range in length from 100 to 1000 base pairs. I chose 1000 bp because it is 
+can range in length from 100 to 1000 base pairs. I chose 1000 bp because it is a long enough stretch to potentially encapsulate promoter elements
+such as the actual core promoter along with proximal and distal elements. 
 regions.
-{Copy generate_promoters.py and refGene_promoters.bed to your submissions directory}
 -
 Promoter-CGI and non-promoter-CGI
 {Commands for generating promoter-CGI and non-promoter-CGI bed files}
 # Generating promoter-CGI
-bedtools intersect -a BGM_WGBS_CpG_methylation.bed -b refGene_promoters.bed -wb -sorted > promoter_CGI.bed
+bedtools intersect -a WGBS_CGI_methylation.bed -b refGene_promoters.bed -wb | sort -k 1,1 -k2,2n > promoter_CGI.bed
 # Generating non-promoter-CGI bed files
-bedtools intersect -a refGene.bed -b promoter_CGI.bed -v -sorted > non_promoter_CGI.bed
+bedtools intersect -a WGBS_CGI_methylation.bed -b promoter_CGI.bed -v | sort -k 1,1 -k2,2n > non_promoter_CGI.bed
 {Justification for overlapping criteria}
 So for creating 
 {Commands for calculating the average CpG methylation for each promoter-CGI and non-promoter-CGI}
+# Generating average promoter CGI methylation bed file
+bedtools groupby -i promoter_CGI.bed -g 1-4 -c 5 -o mean | sort -k 1,1 -k2,2n > average_promoter_CGI_methylation.bed 
+# Generating average non-promoter CGI methylation bed file
+bedtools groupby -i non_promoter_CGI.bed -g 1-4 -c 5 -o mean | sort -k 1,1 -k2,2n > average_non_promoter_CGI_methylation.bed
 {Commands for running analyze_CGI_methylation.py on average_promoter_CGI_methylation.bed and average_non_promoter_CGI_methylation.bed}
-{Copy refGene_promoters.bed, promoter_CGI.bed, non_promoter_CGI.bed average_promoter_CGI_methylation.bed, average_non_promoter_CGI_methylation.bed, average_promoter_CGI_methylation.png and average_non_promoter_CGI_methylation.png to your submissions directory}
+python3 analyze_CGI_methylation.py average_promoter_CGI_methylation.bed
+python3 analyze_CGI_methylation.py average_non_promoter_CGI_methylation.bed
 -
 Question 4:
 {How do the DNA methylation profiles of promoter-CGIs and non-promoter-CGIs differ?}
+There appears to be 
 -
 Part 1.3.1
 {Commands for calculating CpG frequency for each promoter type}

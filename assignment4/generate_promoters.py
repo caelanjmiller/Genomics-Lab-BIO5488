@@ -39,7 +39,7 @@ class Gene:
             )
         elif self.dna_strand == "-":
             self.promoter_region: tuple = tuple(
-                (self.stop_coordinate, self.stop_coordinate - 1000)
+                (self.stop_coordinate - 1000, self.stop_coordinate)
             )
 
     def __repr__(self):
