@@ -8,12 +8,12 @@ import csv
 
 
 """
-Python script to parse methylation .bed files & returns:\n
-BED File of CpG methylation for a user provided whole genome bisulfite sequence (WGBS) BED file\n
-2. Plots for distribution of CpG methylation levels\n
-3. Plots for distribution of read coverage for all CpGs [0-100X]\n
-4. Print CpG fraction with 0X read coverage\n"
-Usage: python3 analyze_WGBS_methylation.py <WGBS BED FILE> <PRINTOUT>
+Python script to parse methylation .bed files & returns:
+BED File of CpG methylation for a user provided whole genome bisulfite sequence (WGBS) BED file
+2. Plots for distribution of CpG methylation levels
+3. Plots for distribution of read coverage for all CpGs [0-100X]
+4. Print CpG fraction with 0X read coverage"
+Usage: python3 analyze_WGBS_methylation.py <WGBS BED FILE>
 """
 
 WBGS_BED = Path(argv[1])

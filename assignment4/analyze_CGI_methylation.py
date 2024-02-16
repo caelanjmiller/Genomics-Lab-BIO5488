@@ -9,6 +9,7 @@ import csv
 """
 Python script to parse CGI average methylation .bed file & return:
 - Plot of average methylation across all CGIs
+Usage: python3 analyze_CGI_methylation.py <CGI AVERAGE METHYLATION BED FILE>
 """
 
 CGI_METHYLATION_BED = Path(argv[1])
