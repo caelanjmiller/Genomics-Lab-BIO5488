@@ -33,9 +33,8 @@ Gene promoters
 {Command for generating the promoter bed file}
 python3 generate_promoters.py refGene.bed
 {Justification for promoter definition}
-So many sources [https://www.addgene.org/mol-bio-reference/promoters/, https://www.frontiersin.org/articles/10.3389/fbioe.2019.00305/full, amongst others] claim that promoter regions
-can range in length from 100 to 1000 base pairs. I chose 1000 bp because it is the middle ground between these two lengths; 100 bp may be too short for some long genes (multiple exons spanning kbp of sequence space) 
-but 1000 bp may be too long for promoters in shorter genes. This approximation that I have taken is not comprehensive but aims to minimize losing out on either end of the spectrum in terms of capturing promoter
+So many sources [https://www.addgene.org/mol-bio-reference/promoters/, https://www.frontiersin.org/articles/10.3389/fbioe.2019.00305/full, https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6848157/, amongst others] claim that promoter regions
+can range in length from 100 to 1000 base pairs. I chose 1000 bp because it is 
 regions.
 {Copy generate_promoters.py and refGene_promoters.bed to your submissions directory}
 -
@@ -46,6 +45,7 @@ bedtools intersect -a BGM_WGBS_CpG_methylation.bed -b refGene_promoters.bed -wb 
 # Generating non-promoter-CGI bed files
 bedtools intersect -a refGene.bed -b promoter_CGI.bed -v -sorted > non_promoter_CGI.bed
 {Justification for overlapping criteria}
+So for creating 
 {Commands for calculating the average CpG methylation for each promoter-CGI and non-promoter-CGI}
 {Commands for running analyze_CGI_methylation.py on average_promoter_CGI_methylation.bed and average_non_promoter_CGI_methylation.bed}
 {Copy refGene_promoters.bed, promoter_CGI.bed, non_promoter_CGI.bed average_promoter_CGI_methylation.bed, average_non_promoter_CGI_methylation.bed, average_promoter_CGI_methylation.png and average_non_promoter_CGI_methylation.png to your submissions directory}
