@@ -34,7 +34,7 @@ Gene promoters
 python3 generate_promoters.py refGene.bed
 {Justification for promoter definition}
 So many sources [https://www.addgene.org/mol-bio-reference/promoters/, https://www.frontiersin.org/articles/10.3389/fbioe.2019.00305/full, amongst others] claim that promoter regions
-can range in length from 100 to 1000 base pairs. I chose 500 bp because it is the middle ground between these two lengths; 100 bp may be too short for some long genes (multiple exons spanning kbp of sequence space) 
+can range in length from 100 to 1000 base pairs. I chose 1000 bp because it is the middle ground between these two lengths; 100 bp may be too short for some long genes (multiple exons spanning kbp of sequence space) 
 but 1000 bp may be too long for promoters in shorter genes. This approximation that I have taken is not comprehensive but aims to minimize losing out on either end of the spectrum in terms of capturing promoter
 regions.
 {Copy generate_promoters.py and refGene_promoters.bed to your submissions directory}

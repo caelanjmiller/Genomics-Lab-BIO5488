@@ -32,10 +32,15 @@ class Gene:
         self.dna_strand = dna_strand
 
     def generate_promoter_regions(self):
-        """Generate promoter regions utilizing gene start & stop coordinates [1st 500bp as promoter]"""
-        self.promoter_region: tuple = tuple(
-            (self.start_coordinate, self.start_coordinate + 500)
-        )
+        """Generate promoter regions utilizing gene start & stop coordinates [1st 1000bp as promoter]"""
+        if self.dna_strand == "+":
+            self.promoter_region: tuple = tuple(
+                (self.start_coordinate, self.start_coordinate + 1000)
+            )
+        elif self.dna_strand == "-":
+            self.promoter_region: tuple = tuple(
+                (self.start_coordinate, self.start_coordinate - 1000)
+            )
 
     def __repr__(self):
         return f"CGI({self.chromosome_number}, {self.start_coordinate}, {self.stop_coordinate}, {self.gene_name}, {self.promoter_region}, {self.number_exons}, {self.dna_strand})"
