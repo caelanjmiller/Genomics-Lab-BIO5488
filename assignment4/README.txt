@@ -5,11 +5,13 @@ python3 analyze_WGBS_methylation.py BGM_WGBS.bed
 -
 Question 1:
 {What does DNA methylation look like across chromosome 21?}
-
--
+DNA methylation in chromosome 21 tends to skew right (towards average methylation of 0), but there is a significant peak towards 
+an average methylation level of 1.0
 Question 2:
 {What does the CpG coverage look like across chromosome 21?}
-
+The data tends to skew right (towards a read coverage of 0), indicating a lot of the chromosome does not have a lot of coverage in 
+terms of sequence space, this is further complicated by the fact that we also likely did not have great depth in those reads so we may not
+be able to be fully confident on the identity of the called base (in our case since we're focused on bisulfite sequencing, C & T)
 -
 Question 2.1:
 {What fraction of the CpGs have 0X coverage?}
@@ -29,7 +31,7 @@ python3 analyze_CGI_methylation.py WGBS_CGI_methylation.bed
 -
 Question 3:
 {What does DNA methylation look like for CpGs in CGIs? How does it compare to all the CpGs on chromosome 21?}
-
+DNA methylation in CGIs tends to follow a similar trend as seen with CpGs in all of chromosome 21
 -
 Part 1.3.0
 Gene promoters
@@ -47,8 +49,8 @@ bedtools intersect -a WGBS_CGI_methylation.bed -b refGene_promoters.bed -wb | so
 # Generating non-promoter-CGI bed files
 bedtools intersect -a WGBS_CGI_methylation.bed -b promoter_CGI.bed -v | sort -k 1,1 -k2,2n > non_promoter_CGI.bed
 {Justification for overlapping criteria}
-So for creating the files, I wanted to parse out gene coordinates that simultaneously exist in my CGI methylation data & regions definied
-as gene promoters (for promoter_CGI.bed). For the non_promoter regions, I wanted regions that DID NOT overlap (hince the -v flag) between
+So for creating the files, I wanted to parse out gene coordinates that simultaneously existed in my CGI methylation data & regions defined
+as gene promoters (for promoter_CGI.bed). For the non_promoter regions, I wanted regions that DID NOT overlap (hence the -v flag) between
 my defined promoter regions and the CGI methylation data.  
 {Commands for calculating the average CpG methylation for each promoter-CGI and non-promoter-CGI}
 # Generating average promoter CGI methylation bed file
@@ -61,7 +63,7 @@ python3 analyze_CGI_methylation.py average_non_promoter_CGI_methylation.bed
 -
 Question 4:
 {How do the DNA methylation profiles of promoter-CGIs and non-promoter-CGIs differ?}
-There appears to be drastic reduction in the methylation levels surrounding promoter regions (large number of of average methylation levels equaling & skewing towards 0)
+There appears to be drastic reduction in the methylation levels surrounding promoter regions (large number of average methylation levels equaling & skewing towards 0)
 versus non-promoter regions (skewed towards the opposite direction; towards average methylation level of 1)
 -
 Part 1.3.1
@@ -75,9 +77,9 @@ Including CpG frequencies as separate files - lots of data:
 -
 Question 5:
 {What is a possible biological explanation for the difference in CpG frequencies?  Interpret your results from parts 1.3.0 and 1.3.1: what are the “simple rules” for describing regulation by DNA methylation in promoters?}
-GC rich regions are more thermostable and less prone to interruption in processes such as DNA transcription via RNApolymerase. Extrapolating
+GC rich regions are more thermostable and less prone to interruption in processes such as DNA transcription via RNA polymerase. Extrapolating
 out to these promoters that are GC rich, this makes sense biologically as important areas where transcription needs to occur (aka your genes), one would
-want these processes to occur with greater efficiency. It has been demonstrated that these CpG islands surrounding promoter regions are 
+want these processes to occur with great efficiency. It has been demonstrated that these CpG islands surrounding promoter regions are 
 often unmethylated and enriched for chromatin modifications leading to active transcription [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1345710/]. 
 With these promoter regions being less prone to methylation (methylation can lead to eventual deamination of cytosine to thymine), despite
 often being GC rich, this could lead one to infer that methylation may serve as a form of repression if a GC rich promoter is methylated. 
