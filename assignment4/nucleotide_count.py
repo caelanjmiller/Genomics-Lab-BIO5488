@@ -2,6 +2,7 @@ from sys import argv
 import os
 from collections import Counter
 from itertools import islice
+from statistics import mean 
 
 FILE = argv[1]
 
@@ -95,16 +96,20 @@ def calculate_dinucleotide_frequency(dinucleotide_count: dict) -> dict:
     return fasta_dinucleotide_frequencies
 
 
-def printout_CpG_frequencies(dinucleotide_frequency: dict):
+def printout_CpG_frequencies(dinucleotide_frequency: dict) -> float:
     """Print out CpG frequencies for multi FASTA"""
-    for header, dinucleotide_frequencies_dict in dinucleotide_frequency.items():
+    cg_dinucleotide_frequencies: list = []
+    for dinucleotide_frequencies_dict in dinucleotide_frequency.values():
         for dinucleotide, frequency in dinucleotide_frequencies_dict.items():
             if dinucleotide == "CG":
-                print(f"{header} - {dinucleotide}: {frequency}")
+                cg_dinucleotide_frequencies.append(float(frequency))
+    cg_dinucleotide_frequency: float = round(mean(cg_dinucleotide_frequencies), 3)
+    return cg_dinucleotide_frequency
 
 fasta: dict = FASTA_IO(FILE)
 dinucleotide_count: dict = count_dinucleotides(fasta)
 dinucleotide_frequency: dict = calculate_dinucleotide_frequency(dinucleotide_count)
-printout_CpG_frequencies(dinucleotide_frequency)
+cg_dinucleotide_frequency: float = printout_CpG_frequencies(dinucleotide_frequency)
+print(cg_dinucleotide_frequency)
 
 # Caelan Miller - 2024

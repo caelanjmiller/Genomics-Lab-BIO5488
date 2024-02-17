@@ -72,8 +72,8 @@ python3 nucleotide_count.py promoter_CGI.fasta > promoter_CpG_frequencies.txt
 python3 nucleotide_count.py non_promoter_CGI.fasta > non_promoter_CpG_frequencies.txt
 {CpG frequencies for each promoter type}
 Including CpG frequencies as separate files - lots of data:
-1. non_promoter_CpG_frequencies.txt
-2. promoter_CpG_frequencies.txt 
+Promoter CpG Frequency: 0.111
+Non Promoter CpG Frequency: 0.089
 -
 Question 5:
 {What is a possible biological explanation for the difference in CpG frequencies?  Interpret your results from parts 1.3.0 and 1.3.1: what are the “simple rules” for describing regulation by DNA methylation in promoters?}
