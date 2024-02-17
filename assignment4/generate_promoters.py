@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from sys import argv
+from sys import argv, exit
 from pathlib import Path
 import os
 import csv
@@ -102,3 +102,7 @@ def output_gene_promoters_bed_file(genes: list, FILE):
 genes: list = BED_IO(GENE_COORDINATES_BED)
 assign_promoter_regions(genes)
 output_gene_promoters_bed_file(genes, GENE_COORDINATES_BED)
+
+if len(argv) != 2:
+    print(__doc__)
+    exit(1)

@@ -1,10 +1,19 @@
-from sys import argv
+#!/usr/bin/env python3
+
+"""
+Python script that takes multi-entry FASTA and returns CpG frequency
+Usage: python3 nucleotide_count.py <FASTA>
+"""
+
+
+from sys import argv, exit
 import os
 from collections import Counter
 from itertools import islice
 from statistics import mean 
+from pathlib import Path 
 
-FILE = argv[1]
+FILE = Path(argv[1])
 
 def FASTA_IO(FILE) -> dict:
     """Parse in valid FASTA file & return dictionary containing header as key and str of sequence as value"""
@@ -112,4 +121,7 @@ dinucleotide_frequency: dict = calculate_dinucleotide_frequency(dinucleotide_cou
 cg_dinucleotide_frequency: float = printout_CpG_frequencies(dinucleotide_frequency)
 print(cg_dinucleotide_frequency)
 
+if len(argv) != 2:
+    print(__doc__)
+    exit(1)
 # Caelan Miller - 2024

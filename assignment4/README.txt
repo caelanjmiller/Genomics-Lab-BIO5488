@@ -68,8 +68,8 @@ versus non-promoter regions (skewed towards the opposite direction; towards aver
 -
 Part 1.3.1
 {Commands for calculating CpG frequency for each promoter type}
-python3 nucleotide_count.py promoter_CGI.fasta > promoter_CpG_frequencies.txt
-python3 nucleotide_count.py non_promoter_CGI.fasta > non_promoter_CpG_frequencies.txt
+python3 nucleotide_count.py promoter_CGI.fasta
+python3 nucleotide_count.py non_promoter_CGI.fasta
 {CpG frequencies for each promoter type}
 Including CpG frequencies as separate files - lots of data:
 Promoter CpG Frequency: 0.111
