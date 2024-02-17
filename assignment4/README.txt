@@ -5,9 +5,11 @@ python3 analyze_WGBS_methylation.py BGM_WGBS.bed
 -
 Question 1:
 {What does DNA methylation look like across chromosome 21?}
+
 -
 Question 2:
 {What does the CpG coverage look like across chromosome 21?}
+
 -
 Question 2.1:
 {What fraction of the CpGs have 0X coverage?}
@@ -16,7 +18,7 @@ Question 2.1:
 Part 1.1
 {Command for creating a bed file with the average CpG methylation level in each CGI.}
 # Create bed file for methylated CpGs that overlap with CGI intervals 
-bedtools intersect -a BGM_WGBS_CpG_methylation.bed -b CGI.bed -wb -sorted > CpG_CGI_overlap.bed
+bedtools intersect -a BGM_WGBS_CpG_methylation.bed -b CGI.bed -wb | sort -k 1,1 -k2,2n > CpG_CGI_overlap.bed
 # Create bed file with average methylation in each CGI
 bedtools groupby -i CpG_CGI_overlap.bed -g 5-8 -c 4 -o mean > WGBS_CGI_methylation.bed
 -
@@ -27,16 +29,16 @@ python3 analyze_CGI_methylation.py WGBS_CGI_methylation.bed
 -
 Question 3:
 {What does DNA methylation look like for CpGs in CGIs? How does it compare to all the CpGs on chromosome 21?}
+
 -
 Part 1.3.0
 Gene promoters
 {Command for generating the promoter bed file}
 python3 generate_promoters.py refGene.bed
 {Justification for promoter definition}
-So many sources [https://www.addgene.org/mol-bio-reference/promoters/, https://www.frontiersin.org/articles/10.3389/fbioe.2019.00305/full, https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6848157/, amongst others] claim that promoter regions
-can range in length from 100 to 1000 base pairs. I chose 1000 bp because it is a long enough stretch to potentially encapsulate promoter elements
+So many sources [https://www.addgene.org/mol-bio-reference/promoters/, https://www.frontiersin.org/articles/10.3389/fbioe.2019.00305/full, https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6848157/, amongst others] 
+claim that promoter regions can range in length from 100 to 1000 base pairs. I chose 1000 bp because it is a long enough stretch to potentially encapsulate promoter elements
 such as the actual core promoter along with proximal and distal elements. 
-regions.
 -
 Promoter-CGI and non-promoter-CGI
 {Commands for generating promoter-CGI and non-promoter-CGI bed files}
@@ -45,7 +47,9 @@ bedtools intersect -a WGBS_CGI_methylation.bed -b refGene_promoters.bed -wb | so
 # Generating non-promoter-CGI bed files
 bedtools intersect -a WGBS_CGI_methylation.bed -b promoter_CGI.bed -v | sort -k 1,1 -k2,2n > non_promoter_CGI.bed
 {Justification for overlapping criteria}
-So for creating 
+So for creating the files, I wanted to parse out gene coordinates that simultaneously exist in my CGI methylation data & regions definied
+as gene promoters (for promoter_CGI.bed). For the non_promoter regions, I wanted regions that DID NOT overlap (hince the -v flag) between
+my defined promoter regions and the CGI methylation data.  
 {Commands for calculating the average CpG methylation for each promoter-CGI and non-promoter-CGI}
 # Generating average promoter CGI methylation bed file
 bedtools groupby -i promoter_CGI.bed -g 1-4 -c 5 -o mean | sort -k 1,1 -k2,2n > average_promoter_CGI_methylation.bed 
@@ -57,12 +61,26 @@ python3 analyze_CGI_methylation.py average_non_promoter_CGI_methylation.bed
 -
 Question 4:
 {How do the DNA methylation profiles of promoter-CGIs and non-promoter-CGIs differ?}
-There appears to be 
+There appears to be drastic reduction in the methylation levels surrounding promoter regions (large number of of average methylation levels equaling & skewing towards 0)
+versus non-promoter regions (skewed towards the opposite direction; towards average methylation level of 1)
 -
 Part 1.3.1
 {Commands for calculating CpG frequency for each promoter type}
+python3 nucleotide_count.py promoter_CGI.fasta > promoter_CpG_frequencies.txt
+python3 nucleotide_count.py non_promoter_CGI.fasta > non_promoter_CpG_frequencies.txt
 {CpG frequencies for each promoter type}
+Including CpG frequencies as separate files - lots of data:
+1. non_promoter_CpG_frequencies.txt
+2. promoter_CpG_frequencies.txt 
 -
 Question 5:
 {What is a possible biological explanation for the difference in CpG frequencies?  Interpret your results from parts 1.3.0 and 1.3.1: what are the “simple rules” for describing regulation by DNA methylation in promoters?}
+GC rich regions are more thermostable and less prone to interruption in processes such as DNA transcription via RNApolymerase. Extrapolating
+out to these promoters that are GC rich, this makes sense biologically as important areas where transcription needs to occur (aka your genes), one would
+want these processes to occur with greater efficiency. It has been demonstrated that these CpG islands surrounding promoter regions are 
+often unmethylated and enriched for chromatin modifications leading to active transcription [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1345710/]. 
+With these promoter regions being less prone to methylation (methylation can lead to eventual deamination of cytosine to thymine), despite
+often being GC rich, this could lead one to infer that methylation may serve as a form of repression if a GC rich promoter is methylated. 
+Methylation could impede DNA transcription by steric hindrance, with the bulky methyl groups blocking transcriptional machinery 
+or these methyl groups could recruit other protein complexes and form the transcriptionally inactive, heterochromatin. 
 -
