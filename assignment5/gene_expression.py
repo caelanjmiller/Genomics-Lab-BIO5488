@@ -38,17 +38,29 @@ def RNA_SEQ_IO(FILE: Path) -> dict:
                 rna_seq_data[gene_name] = [*map(int, gene_count_data[1:])]            
             return dict(sorted(rna_seq_data.items()))
 
-def transpose_data(rna_seq_data: dict) -> dict:
+def create_transposed_sample_dict (rna_seq_data: dict) -> dict:
+    """Create skeleton dict for use in transposing data"""
+    # Grab an arbitrary dict element and calculate the number of unique Before & After Sample number
+    number_samples: int = int((len(next(iter(rna_seq_data.values()))) / 2))
+    transposed_skeleton_data: dict = {}
+    for sample_number in range(1, number_samples + 1):
+        transposed_skeleton_data[f"Before_{sample_number}"] = []
+    for sample_number in range(1, number_samples + 1):
+        transposed_skeleton_data[f"After_{sample_number}"] = []
+    return transposed_skeleton_data
+
+
+def transpose_data(rna_seq_data: dict, transposed_skeleton_data: dict) -> dict:
     """
     Transpose data from:
     Gene: Gene Counts - Sample
     Sample: Counts Per Gene
     """
-    gene_names: list = []
-    for gene, count_data in rna_seq_data.items():
-        number_samples: int = (len(count_data) / 2)
-
-    pass
+    sample_names: list = transposed_skeleton_data.keys()
+    for gene_name, count_data in rna_seq_data.items():
+        for count in count_data:
+            pass
+    return sample_names
 
 def filter_zero_gene_expression(transposed_data: dict) -> dict:
     """Filter out genes with 0 count data within a RNA Seq dataset"""
@@ -64,6 +76,10 @@ def fishers_linear_discriminant():
     pass
 
 rna_seq_data: dict = RNA_SEQ_IO(EXPRESSION_DATA)
+transposed_skeleton_data: dict = create_transposed_sample_dict(rna_seq_data)
+transposed_rna_seq_data = transpose_data(rna_seq_data, transposed_skeleton_data)
+
+
 
 if len(argv) != 2:
     print(__doc__)
