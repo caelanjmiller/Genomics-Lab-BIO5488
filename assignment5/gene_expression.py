@@ -57,11 +57,11 @@ def add_sample_number(rna_seq_data: dict) -> dict:
     number_samples: int = int((len(next(iter(rna_seq_data.values()))) / 2))
     for gene_name, count_data in rna_seq_data.items():
         for index, sample_count in enumerate(count_data):
-            if index <= number_samples:
-                sample_name: str = f"Before_{index}"
+            if index <= number_samples - 1:
+                sample_name: str = f"Before_{index + 1}"
                 annotated_rna_seq_data[gene_name][sample_name] = sample_count
             else:
-                sample_name: str = f"After_{index - number_samples}"
+                sample_name: str = f"After_{(index - number_samples) + 1}"
                 annotated_rna_seq_data[gene_name][sample_name] = sample_count
     return dict(sorted(annotated_rna_seq_data.items()))
 
@@ -98,7 +98,7 @@ rna_seq_data: dict = RNA_SEQ_IO(EXPRESSION_DATA)
 annotated_rna_seq_data: dict = add_sample_number(rna_seq_data)
 transposed_skeleton_data: dict = create_transposed_sample_dict(rna_seq_data)
 # transposed_rna_seq_data = transpose_data(rna_seq_data, transposed_skeleton_data)
-
+print(annotated_rna_seq_data)
 if len(argv) != 2:
     print(__doc__)
     exit(1)
