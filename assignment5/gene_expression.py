@@ -72,16 +72,26 @@ def transpose_data(rna_seq_data: dict, transposed_skeleton_data: dict) -> dict:
     Gene: Gene Counts - Sample
     Sample: Counts Per Gene
     """
-    sample_names: list = transposed_skeleton_data.keys()
+    # Initialize a default dict to return a dict with structure: [Sample][Gene] = [Count]
+    # e.g. {'Before_1': {'A2ML1': 4}}
+    transposed_rna_seq_data: defaultdict = defaultdict(dict)
     for gene_name, count_data in rna_seq_data.items():
-        for count in count_data:
-            pass
-    return sample_names
+        for sample_name, count in count_data.items():
+            transposed_rna_seq_data[sample_name][gene_name] = count
+    return dict(transposed_rna_seq_data.items())
 
 
 def filter_zero_gene_expression(transposed_data: dict) -> dict:
     """Filter out genes with 0 count data within a RNA Seq dataset"""
-    pass
+    filtered_rna_seq_data: defaultdict = defaultdict(dict)
+    for sample_name, count_data in transposed_data.items():
+        for gene_name, count in count_data.items():
+            # If count is greater than 0, append to new dict
+            if count > 0:
+                filtered_rna_seq_data[sample_name][gene_name] = count
+            else:
+                continue
+    return dict(filtered_rna_seq_data.items())
 
 
 def counts_per_million() -> dict:
@@ -97,8 +107,10 @@ def fishers_linear_discriminant():
 rna_seq_data: dict = RNA_SEQ_IO(EXPRESSION_DATA)
 annotated_rna_seq_data: dict = add_sample_number(rna_seq_data)
 transposed_skeleton_data: dict = create_transposed_sample_dict(rna_seq_data)
-# transposed_rna_seq_data = transpose_data(rna_seq_data, transposed_skeleton_data)
-print(annotated_rna_seq_data)
+transposed_rna_seq_data: dict = transpose_data(
+    annotated_rna_seq_data, transposed_skeleton_data
+)
+filtered_rna_seq_data: dict = filter_zero_gene_expression(transposed_rna_seq_data)
 if len(argv) != 2:
     print(__doc__)
     exit(1)
