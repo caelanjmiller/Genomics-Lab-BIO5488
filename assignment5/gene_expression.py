@@ -6,6 +6,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import csv
 import os
+
 """"
 Python script to 
 """
@@ -66,11 +67,11 @@ def filter_zero_gene_expression(rna_seq_data: dict) -> dict:
     """Filter out genes with 0 count data within a RNA Seq dataset"""
     filtered_rna_seq_data: dict = {}
     for gene, count_data in rna_seq_data.items():
-            # If sum of list is greater than 0, append to new dict
-            if sum(count_data) > 0:
-                filtered_rna_seq_data[gene] = count_data
-            else:
-                continue
+        # If sum of list is greater than 0, append to new dict
+        if sum(count_data) > 0:
+            filtered_rna_seq_data[gene] = count_data
+        else:
+            continue
     return dict(sorted(filtered_rna_seq_data.items()))
 
 
@@ -87,10 +88,16 @@ def counts_per_million(filtered_rna_seq_data: dict, library_sizes: dict) -> dict
     rna_seq_cpm: dict = {}
     total_library_sizes: list = list(library_sizes.values())
     for gene_name, count_data in filtered_rna_seq_data.items():
-            rna_seq_cpm[gene_name] = [((10**6) * (raw_count / total_counts))for raw_count, total_counts in zip(count_data, total_library_sizes)]
+        rna_seq_cpm[gene_name] = [
+            ((10**6) * (raw_count / total_counts))
+            for raw_count, total_counts in zip(count_data, total_library_sizes)
+        ]
     return dict(sorted(rna_seq_cpm.items()))
-    
-def filter_by_counts_per_million(filtered_rna_seq_data: dict, rna_seq_cpm: dict, threshold: float, num_fail: int) -> dict:
+
+
+def filter_by_counts_per_million(
+    filtered_rna_seq_data: dict, rna_seq_cpm: dict, threshold: float, num_fail: int
+) -> dict:
     """Filter RNA Seq data dict by CPM threshold"""
     cpm_filtered_rna_seq_data: dict = {}
     for gene_name, cpm_data in rna_seq_cpm.items():
@@ -99,8 +106,9 @@ def filter_by_counts_per_million(filtered_rna_seq_data: dict, rna_seq_cpm: dict,
             if cpm < threshold:
                 number_samples_fail_cpm.append(cpm)
         if len(number_samples_fail_cpm) < num_fail:
-           cpm_filtered_rna_seq_data[gene_name] = filtered_rna_seq_data[gene_name]
+            cpm_filtered_rna_seq_data[gene_name] = filtered_rna_seq_data[gene_name]
     return dict(sorted(cpm_filtered_rna_seq_data.items()))
+
 
 def calculate_library_size_range(rna_seq_data: dict) -> tuple:
     """Calculate range of library size from RNA Seq sample data"""
@@ -112,12 +120,17 @@ def create_library_size_histogram(cpm_filtered_rna_seq: dict) -> None:
     current_directory: Path = Path.cwd()
     annotated_rna_seq_data: dict = add_sample_number(cpm_filtered_rna_seq)
     transposed_cpm_filtered_rna_seq_data: dict = transpose_data(annotated_rna_seq_data)
-    total_sample_library_sizes: dict = calculate_library_sizes(transposed_cpm_filtered_rna_seq_data)
-    plt.bar(x=total_sample_library_sizes.keys(), height=total_sample_library_sizes.values())
+    total_sample_library_sizes: dict = calculate_library_sizes(
+        transposed_cpm_filtered_rna_seq_data
+    )
+    plt.bar(
+        x=total_sample_library_sizes.keys(), height=total_sample_library_sizes.values()
+    )
     plt.xlabel("Samples")
     plt.ylabel("Library Size (in Millions)")
     plt.title(f"Library Sizes of RNA Seq Samples")
     plt.savefig(f"{current_directory}/library_size.png")
+
 
 def fishers_linear_discriminant():
     """"""
@@ -129,12 +142,14 @@ rna_seq_data: dict = RNA_SEQ_IO(EXPRESSION_DATA)
 filtered_rna_seq_data: dict = filter_zero_gene_expression(rna_seq_data)
 # print(f"Number of Genes After Filtering: {len(filtered_rna_seq_data.keys())}")
 annotated_rna_seq_data: dict = add_sample_number(filtered_rna_seq_data)
-transposed_unfiltered_rna_seq_data: dict = transpose_data(
-    annotated_rna_seq_data
+transposed_unfiltered_rna_seq_data: dict = transpose_data(annotated_rna_seq_data)
+rna_seq_library_sizes: dict = calculate_library_sizes(
+    transposed_unfiltered_rna_seq_data
 )
-rna_seq_library_sizes: dict = calculate_library_sizes(transposed_unfiltered_rna_seq_data)
 rna_seq_cpm: dict = counts_per_million(filtered_rna_seq_data, rna_seq_library_sizes)
-cpm_filtered_rna_seq: dict = filter_by_counts_per_million(filtered_rna_seq_data,rna_seq_cpm, float(1), 20)
+cpm_filtered_rna_seq: dict = filter_by_counts_per_million(
+    filtered_rna_seq_data, rna_seq_cpm, float(1), 20
+)
 # print(f"Number of genes left after CPM filtration: {len(cpm_filtered_rna_seq.keys())}")
 create_library_size_histogram(cpm_filtered_rna_seq)
 if len(argv) != 2:
