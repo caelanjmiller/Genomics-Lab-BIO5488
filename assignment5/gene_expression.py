@@ -4,6 +4,7 @@ from sys import argv, exit
 from pathlib import Path
 from collections import defaultdict
 import matplotlib.pyplot as plt
+import numpy as np
 import csv
 
 """"
@@ -112,7 +113,8 @@ def filter_by_counts_per_million(
 def calculate_library_size_range(rna_seq_data: dict) -> tuple:
     """Calculate range of library size from RNA Seq sample data"""
     library_sizes: list = list(rna_seq_data.values())
-    range: tuple = tuple((min(library_sizes), (max(library_sizes))))
+    # Round to nearest integer (cognizant of rounding to the closest int)
+    range: tuple = tuple((round(min(library_sizes)), round((max(library_sizes)))))
     return range
 
 
@@ -135,33 +137,98 @@ def create_library_size_histogram(cpm_filtered_rna_seq: dict) -> None:
     plt.xlabel("Samples")
     plt.ylabel("Library Size (in Millions)")
     plt.title("Library Sizes Prior to Normalization")
-    plt.xticks([])
+    plt.xticks(rotation=45)
+    plt.figure(figsize=(10, 30))
     plt.savefig(f"{current_directory}/library_size.png")
+    plt.close()
+
+
+def calculate_upper_quartile_normalization(cpm_filtered_rna_seq_data: dict) -> dict:
+    """Calculate the upper quartile normalized count for RNA Seq samples"""
+    upper_quartile_normalization_data: dict = {}
+    # Create transposed dictionary
+    transposed_annotated_cpm_filtered_rna_seq_data: dict = transpose_data(
+        add_sample_number(cpm_filtered_rna_seq_data)
+    )
+    # Create list of upper quartile values for each sample
+    upper_quartile_values: list = []
+    for count_data in transposed_annotated_cpm_filtered_rna_seq_data.values():
+        upper_quartile_values.append(np.percentile(list(count_data.values()), 75))
+    # Calculate mean value of upper quartiles across all samples
+    mean_value: float = np.mean(upper_quartile_values)
+    for gene_name, count_data in cpm_filtered_rna_seq_data.items():
+        # Perform upper quartile normalization
+        upper_quartile_normalization_data[gene_name] = [
+            ((raw_count / upper_quartile) * mean_value)
+            for raw_count, upper_quartile in zip(count_data, upper_quartile_values)
+        ]
+    return upper_quartile_normalization_data
+
+
+def create_library_size_normalized_histogram(
+    transposed_annotated_normalized_rna_seq_data: dict,
+) -> None:
+    """Create histogram of normalized library sizes for each sample in RNA Seq dataset"""
+    current_directory: Path = Path.cwd()
+    total_sample_library_sizes: dict = calculate_library_sizes(
+        transposed_annotated_normalized_rna_seq_data
+    )
+    # Scale library sizes for easier visualization
+    scaled_library_sizes: list = list(
+        map(
+            lambda library_size: library_size / 10**6,
+            list(total_sample_library_sizes.values()),
+        )
+    )
+    plt.bar(x=total_sample_library_sizes.keys(), height=(scaled_library_sizes))
+    plt.xlabel("Samples")
+    plt.ylabel("Library Size (in Millions)")
+    plt.title("Library Sizes After Normalization")
+    plt.xticks(rotation=45)
+    plt.figure(figsize=(10, 30))
+    plt.savefig(f"{current_directory}/library_size_normalized.png")
+    plt.close()
 
 
 def fishers_linear_discriminant():
-    """"""
+    """Calculate Fisher's Linear Discriminant (FLD) for determination of differential expression"""
     pass
 
 
 rna_seq_data: dict = RNA_SEQ_IO(EXPRESSION_DATA)
-print(f"Number of Genes: {len(rna_seq_data.keys())}")
-filtered_rna_seq_data: dict = filter_zero_gene_expression(rna_seq_data)
-print(f"Number of Genes After Filtering: {len(filtered_rna_seq_data.keys())}")
-annotated_rna_seq_data: dict = add_sample_number(filtered_rna_seq_data)
+# print(f"Number of Genes: {len(rna_seq_data.keys())}")
+zero_filtered_rna_seq_data: dict = filter_zero_gene_expression(rna_seq_data)
+# print(f"Number of genes after filtering zero expression: {len(zero_filtered_rna_seq_data.keys())}")
+annotated_rna_seq_data: dict = add_sample_number(zero_filtered_rna_seq_data)
 transposed_unfiltered_rna_seq_data: dict = transpose_data(annotated_rna_seq_data)
 rna_seq_library_sizes: dict = calculate_library_sizes(
     transposed_unfiltered_rna_seq_data
 )
-rna_seq_cpm: dict = counts_per_million(filtered_rna_seq_data, rna_seq_library_sizes)
-cpm_filtered_rna_seq: dict = filter_by_counts_per_million(
-    filtered_rna_seq_data, rna_seq_cpm, float(1), 20
+rna_seq_cpm: dict = counts_per_million(
+    zero_filtered_rna_seq_data, rna_seq_library_sizes
 )
-print(f"Number of genes left after CPM filtration: {len(cpm_filtered_rna_seq.keys())}")
-print(
-    f"Range of Library Sizes: {calculate_library_size_range(calculate_library_sizes(transpose_data(add_sample_number(cpm_filtered_rna_seq))))}"
+cpm_filtered_rna_seq_data: dict = filter_by_counts_per_million(
+    zero_filtered_rna_seq_data, rna_seq_cpm, float(1), 20
 )
-create_library_size_histogram(cpm_filtered_rna_seq)
+transposed_annotated_cpm_filtered_rna_seq_data: dict = transpose_data(
+    add_sample_number(cpm_filtered_rna_seq_data)
+)
+# print(f"Number of genes left after CPM filtration: {len(cpm_filtered_rna_seq_data.keys())}")
+# print(
+#     f"Range of Library Sizes: {calculate_library_size_range(calculate_library_sizes(transposed_annotated_cpm_filtered_rna_seq_data))}"
+# )
+create_library_size_histogram(cpm_filtered_rna_seq_data)
+upper_normalization_data: dict = calculate_upper_quartile_normalization(
+    cpm_filtered_rna_seq_data
+)
+transposed_annotated_normalized_rna_seq_data: dict = transpose_data(
+    add_sample_number(upper_normalization_data)
+)
+create_library_size_normalized_histogram(transposed_annotated_normalized_rna_seq_data)
+# print(
+#     f"Range of Library Sizes: {calculate_library_size_range(calculate_library_sizes(transposed_annotated_normalized_rna_seq_data))}"
+# )
 if len(argv) != 2:
     print(__doc__)
     exit(1)
+# Caelan Miller - 2024

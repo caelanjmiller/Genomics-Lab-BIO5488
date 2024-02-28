@@ -18,6 +18,7 @@ Question 3:
 -
 Question 4:
 {What is the range of library sizes (min, max) after normalization?}
+13671809, 22214610
 -
 Question 5:
 {Compare the two library size bar charts you made. How did the distribution of library sizes change after normalization?}
