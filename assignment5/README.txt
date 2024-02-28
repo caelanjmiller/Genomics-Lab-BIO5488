@@ -2,9 +2,11 @@ Assignment 5 Due February 23, 2024 at 11:59pm
 
 Please provide the exact command line arguments you used to generate your results.
 {How to run gene_expression.py}
+python3 gene_expression.py raw_counts.txt
 -
 Question 1:
 {How many genes are left after removing genes with zero expression in all samples?}
+23259
 -
 Question 2:
 {How many genes are left after removing genes where 20 or more samples have cpm < 1?}
@@ -12,6 +14,7 @@ Question 2:
 -
 Question 3:
 {What is the range of library sizes (min, max)?}
+(11464513, 20839468)
 -
 Question 4:
 {What is the range of library sizes (min, max) after normalization?}
@@ -37,17 +40,3 @@ Question 8:
 Question 9:
 {If you were going to spend time and money following up on one of these top ten genes, what would be your candidate and why? (There could be many correct answers.)}
 -
-Extra credit 1:
-{What do you expect to see?}
--
-Extra credit 2:
-{What did you actually see? If you did not find what you expected, what sorts of variation could account for this?}
--
-Comments:
-{Things that went wrong or you cannot figure out}
--
-Suggestions:
-{What programming and/or genomics topics should the TAs cover in the next class that would have made this assignment go smoother?}
--
-
-

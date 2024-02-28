@@ -5,7 +5,6 @@ from pathlib import Path
 from collections import defaultdict
 import matplotlib.pyplot as plt
 import csv
-import os
 
 """"
 Python script to 
@@ -112,7 +111,9 @@ def filter_by_counts_per_million(
 
 def calculate_library_size_range(rna_seq_data: dict) -> tuple:
     """Calculate range of library size from RNA Seq sample data"""
-    pass
+    library_sizes: list = list(rna_seq_data.values())
+    range: tuple = tuple((min(library_sizes), (max(library_sizes))))
+    return range
 
 
 def create_library_size_histogram(cpm_filtered_rna_seq: dict) -> None:
@@ -123,12 +124,18 @@ def create_library_size_histogram(cpm_filtered_rna_seq: dict) -> None:
     total_sample_library_sizes: dict = calculate_library_sizes(
         transposed_cpm_filtered_rna_seq_data
     )
-    plt.bar(
-        x=total_sample_library_sizes.keys(), height=total_sample_library_sizes.values()
+    # Scale library sizes for easier visualization
+    scaled_library_sizes: list = list(
+        map(
+            lambda library_size: library_size / 10**6,
+            list(total_sample_library_sizes.values()),
+        )
     )
+    plt.bar(x=total_sample_library_sizes.keys(), height=(scaled_library_sizes))
     plt.xlabel("Samples")
     plt.ylabel("Library Size (in Millions)")
-    plt.title(f"Library Sizes of RNA Seq Samples")
+    plt.title("Library Sizes Prior to Normalization")
+    plt.xticks([])
     plt.savefig(f"{current_directory}/library_size.png")
 
 
@@ -138,9 +145,9 @@ def fishers_linear_discriminant():
 
 
 rna_seq_data: dict = RNA_SEQ_IO(EXPRESSION_DATA)
-# print(f"Number of Genes: {len(rna_seq_data.keys())}")
+print(f"Number of Genes: {len(rna_seq_data.keys())}")
 filtered_rna_seq_data: dict = filter_zero_gene_expression(rna_seq_data)
-# print(f"Number of Genes After Filtering: {len(filtered_rna_seq_data.keys())}")
+print(f"Number of Genes After Filtering: {len(filtered_rna_seq_data.keys())}")
 annotated_rna_seq_data: dict = add_sample_number(filtered_rna_seq_data)
 transposed_unfiltered_rna_seq_data: dict = transpose_data(annotated_rna_seq_data)
 rna_seq_library_sizes: dict = calculate_library_sizes(
@@ -150,7 +157,10 @@ rna_seq_cpm: dict = counts_per_million(filtered_rna_seq_data, rna_seq_library_si
 cpm_filtered_rna_seq: dict = filter_by_counts_per_million(
     filtered_rna_seq_data, rna_seq_cpm, float(1), 20
 )
-# print(f"Number of genes left after CPM filtration: {len(cpm_filtered_rna_seq.keys())}")
+print(f"Number of genes left after CPM filtration: {len(cpm_filtered_rna_seq.keys())}")
+print(
+    f"Range of Library Sizes: {calculate_library_size_range(calculate_library_sizes(transpose_data(add_sample_number(cpm_filtered_rna_seq))))}"
+)
 create_library_size_histogram(cpm_filtered_rna_seq)
 if len(argv) != 2:
     print(__doc__)
