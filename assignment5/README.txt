@@ -8,6 +8,7 @@ Question 1:
 -
 Question 2:
 {How many genes are left after removing genes where 20 or more samples have cpm < 1?}
+14464
 -
 Question 3:
 {What is the range of library sizes (min, max)?}
