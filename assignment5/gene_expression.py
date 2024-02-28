@@ -133,12 +133,15 @@ def create_library_size_histogram(cpm_filtered_rna_seq: dict) -> None:
             list(total_sample_library_sizes.values()),
         )
     )
-    plt.bar(x=total_sample_library_sizes.keys(), height=(scaled_library_sizes))
+    plt.bar(
+        x=total_sample_library_sizes.keys(),
+        height=(scaled_library_sizes),
+        color=np.random.rand(len(scaled_library_sizes), 3),
+    )
     plt.xlabel("Samples")
     plt.ylabel("Library Size (in Millions)")
     plt.title("Library Sizes Prior to Normalization")
-    plt.xticks(rotation=45)
-    plt.figure(figsize=(10, 30))
+    plt.xticks(rotation=45, ha="right")
     plt.savefig(f"{current_directory}/library_size.png")
     plt.close()
 
@@ -180,12 +183,15 @@ def create_library_size_normalized_histogram(
             list(total_sample_library_sizes.values()),
         )
     )
-    plt.bar(x=total_sample_library_sizes.keys(), height=(scaled_library_sizes))
+    plt.bar(
+        x=total_sample_library_sizes.keys(),
+        height=(scaled_library_sizes),
+        color=np.random.rand(len(scaled_library_sizes), 3),
+    )
     plt.xlabel("Samples")
     plt.ylabel("Library Size (in Millions)")
     plt.title("Library Sizes After Normalization")
-    plt.xticks(rotation=45)
-    plt.figure(figsize=(10, 30))
+    plt.xticks(rotation=45, ha="right")
     plt.savefig(f"{current_directory}/library_size_normalized.png")
     plt.close()
 
