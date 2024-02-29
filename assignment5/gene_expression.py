@@ -9,7 +9,8 @@ import numpy as np
 import csv
 
 """"
-Python script to 
+Python script to analyze RNA Seq Data
+Usage: python3 gene_expression.py <RNA SEQ DATA>
 """
 
 EXPRESSION_DATA = Path(argv[1])
@@ -134,6 +135,7 @@ def create_library_size_histogram(cpm_filtered_rna_seq: dict) -> None:
             list(total_sample_library_sizes.values()),
         )
     )
+    plt.figure(figsize=(8, 6))
     plt.bar(
         x=total_sample_library_sizes.keys(),
         height=(scaled_library_sizes),
@@ -184,6 +186,7 @@ def create_library_size_normalized_histogram(
             list(total_sample_library_sizes.values()),
         )
     )
+    plt.figure(figsize=(8, 6))
     plt.bar(
         x=total_sample_library_sizes.keys(),
         height=(scaled_library_sizes),
@@ -242,44 +245,56 @@ def create_expression_level_bar_chart(
     upper_normalization_data: dict, gene: str
 ) -> None:
     """Create a bar graph of the mean expression of a supplied gene"""
-    gene_expression_data: dict = {}
+    merged_data: dict = {}
+    before_count_sem: float = 0.0
+    after_count_sem: float = 0.0
     for gene_name, count_data in upper_normalization_data.items():
+        number_samples: int = int(
+            (len(next(iter(upper_normalization_data.values()))) / 2)
+        )
         if gene == gene_name:
-            gene_expression_data[gene_name] = count_data
-    number_samples: int = int((len(next(iter(gene_expression_data.values()))) / 2))
-    before_count_data: list = list(gene_expression_data.values())[
-        number_samples - number_samples : number_samples
-    ]
-    after_count_data: list = count_data[number_samples:]
-    # before_count_sem: float = np.std(before_count_data, ddof=1) / np.sqrt(
-    #     np.size(before_count_data)
-    # )
-    # after_count_sem: float = np.std(after_count_data, ddof=1) / np.sqrt(
-    #     np.size(after_count_data)
-    # )
+            # Assign Before & After Gene Sample normalized count data
+            before_count_data: list = count_data[
+                number_samples - number_samples : number_samples
+            ]
+            after_count_data: list = count_data[number_samples:]
+            merged_data["Before"] = np.mean(before_count_data)
+            merged_data["After"] = np.mean(after_count_data)
+            # Calculation of standard error of mean (SEM)
+            before_count_sem = np.std(before_count_data) / np.sqrt(
+                np.size(before_count_data)
+            )
+            after_count_sem = np.std(after_count_data) / np.sqrt(
+                np.size(after_count_data)
+            )
     current_directory: Path = Path.cwd()
+    plt.figure(figsize=(8, 6))
     plt.bar(
-        x="Before",
-        height=(before_count_data),
-        color=np.random.rand(1, 3),
-        label="Before",
+        ["Before", "After"],
+        list(merged_data.values()),
+        color=np.random.rand(2, 3),
     )
-    plt.bar(
-        x="After", height=(after_count_data), color=np.random.rand(1, 3), label="After"
+    plt.errorbar(
+        ["Before", "After"],
+        list(merged_data.values()),
+        yerr=[before_count_sem, after_count_sem],
+        fmt="o",
+        color="#000000",
     )
     plt.xlabel("Group")
-    plt.ylabel("Mean Expression")
-    plt.title(f"Mean Expression Levels of {gene.title()}")
-    plt.xticks(rotation=45, ha="right")
-    plt.legend()
+    plt.ylabel("Mean Expression Level")
+    plt.title(f"Mean Expression Levels of {gene.upper()}")
+    plt.xticks(ha="right")
     plt.savefig(f"{current_directory}/mean_expression.png")
     plt.close()
 
 
 rna_seq_data: dict = RNA_SEQ_IO(EXPRESSION_DATA)
-# print(f"Number of Genes: {len(rna_seq_data.keys())}")
+print(f"Number of Genes: {len(rna_seq_data.keys())}")
 zero_filtered_rna_seq_data: dict = filter_zero_gene_expression(rna_seq_data)
-# print(f"Number of genes after filtering zero expression: {len(zero_filtered_rna_seq_data.keys())}")
+print(
+    f"Number of genes after filtering zero expression: {len(zero_filtered_rna_seq_data.keys())}"
+)
 annotated_rna_seq_data: dict = add_sample_number(zero_filtered_rna_seq_data)
 transposed_unfiltered_rna_seq_data: dict = transpose_data(annotated_rna_seq_data)
 rna_seq_library_sizes: dict = calculate_library_sizes(
@@ -294,10 +309,12 @@ cpm_filtered_rna_seq_data: dict = filter_by_counts_per_million(
 transposed_annotated_cpm_filtered_rna_seq_data: dict = transpose_data(
     add_sample_number(cpm_filtered_rna_seq_data)
 )
-# print(f"Number of genes left after CPM filtration: {len(cpm_filtered_rna_seq_data.keys())}")
-# print(
-#     f"Range of Library Sizes: {calculate_library_size_range(calculate_library_sizes(transposed_annotated_cpm_filtered_rna_seq_data))}"
-# )
+print(
+    f"Number of genes left after CPM filtration: {len(cpm_filtered_rna_seq_data.keys())}"
+)
+print(
+    f"Range of Library Sizes: {calculate_library_size_range(calculate_library_sizes(transposed_annotated_cpm_filtered_rna_seq_data))}"
+)
 create_library_size_histogram(cpm_filtered_rna_seq_data)
 upper_normalization_data: dict = calculate_upper_quartile_normalization(
     cpm_filtered_rna_seq_data
@@ -306,14 +323,14 @@ transposed_annotated_normalized_rna_seq_data: dict = transpose_data(
     add_sample_number(upper_normalization_data)
 )
 create_library_size_normalized_histogram(transposed_annotated_normalized_rna_seq_data)
-# print(
-#     f"Range of Library Sizes: {calculate_library_size_range(calculate_library_sizes(transposed_annotated_normalized_rna_seq_data))}"
-# )
+print(
+    f"Range of Library Sizes: {calculate_library_size_range(calculate_library_sizes(transposed_annotated_normalized_rna_seq_data))}"
+)
 fishers_linear_discriminant_data: dict = calculate_fishers_linear_discriminant(
     upper_normalization_data
 )
-# print(fishers_linear_discriminant_data)
-# print_top_FLD_scores(capture_top_genes_FLD(fishers_linear_discriminant_data))
+print(fishers_linear_discriminant_data)
+print_top_FLD_scores(capture_top_genes_FLD(fishers_linear_discriminant_data))
 create_expression_level_bar_chart(upper_normalization_data, "FNDC5")
 if len(argv) != 2:
     print(__doc__)
