@@ -22,7 +22,8 @@ Question 4:
 -
 Question 5:
 {Compare the two library size bar charts you made. How did the distribution of library sizes change after normalization?}
-The distribution between the 
+The relative distribution in both graphs are relatively the same, however the spread (range and variance) are reduced in the normalized
+dataset, and this is reflected in the reduction of spread between library sizes. 
 -
 {Briefly discuss why it is important to normalize your RNA-seq data.}
 It is important to normalize data (as a whole, not just RNA-Seq data) to place the data on a common scale
@@ -55,11 +56,14 @@ this would lead me to reasonably conclude that these genes may be additive with 
 -
 {Does RNA-seq expression data always give researchers a clear answer?}
 No! Sometimes it can lead to more questions, which can be both a positive and negative thing depending on your mentality and stage of the PhD.
-In all seriousness, RNA Seq can create more directions from which a researcher can consider the effects of genes that would not have been considered otherwise,
+In all seriousness, RNA Seq experiments can create more directions from which a researcher can consider the effects of genes that would not have been considered otherwise,
 however care must be taken to keep things in biological perspective/relevance
 -
 Question 8:
 {How does the study design of this experiment relate to the assumptions made when studying gene expression data?}
+In the context of this study, we are assuming that the main modulator of gene product production is exercise, which should spur metabolic changes in those
+individuals at high risk of diabetes. The changes in the expression profile of the samples (before and after) should indicate (according to our potential hypotheses)
+that exercise modulates this differential gene expression, which should also correspond to the production of functional products (but this is not always the case!).
 -
 Question 9:
 {If you were going to spend time and money following up on one of these top ten genes, what would be your candidate and why? (There could be many correct answers.)}
