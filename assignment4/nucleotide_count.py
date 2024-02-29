@@ -10,10 +10,11 @@ from sys import argv, exit
 import os
 from collections import Counter
 from itertools import islice
-from statistics import mean 
-from pathlib import Path 
+from statistics import mean
+from pathlib import Path
 
 FILE = Path(argv[1])
+
 
 def FASTA_IO(FILE) -> dict:
     """Parse in valid FASTA file & return dictionary containing header as key and str of sequence as value"""
@@ -85,7 +86,9 @@ def count_dinucleotides(fasta: dict) -> dict:
             "U",
         ]
         for dinucleotide in list(dinucleotide_count.keys()):
-            if any(nucleotide in dinucleotide for nucleotide in non_canonical_nucleotides):
+            if any(
+                nucleotide in dinucleotide for nucleotide in non_canonical_nucleotides
+            ):
                 del dinucleotide_count[dinucleotide]
         fasta_dinucleotide_count[header] = dinucleotide_count
     return fasta_dinucleotide_count
@@ -114,6 +117,7 @@ def printout_CpG_frequencies(dinucleotide_frequency: dict) -> float:
                 cg_dinucleotide_frequencies.append(float(frequency))
     cg_dinucleotide_frequency: float = round(mean(cg_dinucleotide_frequencies), 3)
     return cg_dinucleotide_frequency
+
 
 fasta: dict = FASTA_IO(FILE)
 dinucleotide_count: dict = count_dinucleotides(fasta)

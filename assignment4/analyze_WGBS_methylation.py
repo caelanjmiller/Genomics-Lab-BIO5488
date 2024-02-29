@@ -121,9 +121,7 @@ def create_CpG_methylation_distribution(bed_coordinates: list, FILE):
     """Create histogram of CpG methylation levels"""
     current_directory: Path = Path.cwd()
     basename: str = os.path.basename(FILE).split(".bed")[0]
-    CpG_methylation: list = [
-        bed_row.methylation_level for bed_row in bed_coordinates
-    ]
+    CpG_methylation: list = [bed_row.methylation_level for bed_row in bed_coordinates]
     plt.hist(CpG_methylation, bins=20)
     plt.xlabel("CpG Methylation Levels")
     plt.ylabel("Frequency")

@@ -148,7 +148,7 @@ def find_gap_lengths(gaps: list) -> list:
     for gap in gaps:
         start, stop = gap
         gap_length: int = int(stop - start)
-        gap_lengths.append(gap_length)    
+        gap_lengths.append(gap_length)
     return gap_lengths
 
 
@@ -192,8 +192,8 @@ elif PRINTOUT == "graph":
     create_gap_length_histogram(gap_lengths, FILE)
     print(len(gap_lengths))
     gap_counter: dict = dict(Counter(gap_lengths))
-    print(f'Length(bp): Count')
+    print("Length(bp): Count")
     for length, count in gap_counter.items():
-        print(f'{length}: {count}')
+        print(f"{length}: {count}")
 else:
     raise Exception("Provide valid printout option")
