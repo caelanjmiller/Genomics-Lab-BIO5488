@@ -3,6 +3,7 @@
 from sys import argv, exit
 from pathlib import Path
 from collections import defaultdict
+from itertools import islice
 import matplotlib.pyplot as plt
 import numpy as np
 import csv
@@ -196,9 +197,83 @@ def create_library_size_normalized_histogram(
     plt.close()
 
 
-def fishers_linear_discriminant():
+def calculate_fishers_linear_discriminant(
+    filtered_normalized_rna_seq_data: dict,
+) -> dict:
     """Calculate Fisher's Linear Discriminant (FLD) for determination of differential expression"""
-    pass
+    fishers_linear_discriminant_data: dict = {}
+    number_samples: int = int(
+        (len(next(iter(filtered_normalized_rna_seq_data.values()))) / 2)
+    )
+    for gene, count_data in filtered_normalized_rna_seq_data.items():
+        before_count_data: list = count_data[
+            number_samples - number_samples : number_samples
+        ]
+        after_count_data: list = count_data[number_samples:]
+        fishers_linear_discriminant_data[gene] = (
+            np.mean(before_count_data) - np.mean(after_count_data)
+        ) ** 2 / ((np.std(before_count_data)) ** 2 + (np.std(after_count_data) ** 2))
+    return fishers_linear_discriminant_data
+
+
+def capture_top_genes_FLD(fishers_linear_discriminant_data: dict) -> dict:
+    """Return top 10 genes with highest FLD score"""
+    # Sort by FLD & grab top 10 highest FLD scores
+    ascending_FLD_scores: dict = dict(
+        (
+            sorted(
+                fishers_linear_discriminant_data.items(),
+                key=lambda FLD_score: FLD_score[1],
+                reverse=True,
+            )
+        )
+    )
+    top_FLD_scores: dict = dict(islice(ascending_FLD_scores.items(), 10))
+    return top_FLD_scores
+
+
+def print_top_FLD_scores(top_FLD_scores: dict) -> None:
+    """Print out top FLD scores to stdout"""
+    for gene, FLD_score in top_FLD_scores.items():
+        print(f"{gene}: {FLD_score}")
+
+
+def create_expression_level_bar_chart(
+    upper_normalization_data: dict, gene: str
+) -> None:
+    """Create a bar graph of the mean expression of a supplied gene"""
+    gene_expression_data: dict = {}
+    for gene_name, count_data in upper_normalization_data.items():
+        if gene == gene_name:
+            gene_expression_data[gene_name] = count_data
+    number_samples: int = int((len(next(iter(gene_expression_data.values()))) / 2))
+    before_count_data: list = list(gene_expression_data.values())[
+        number_samples - number_samples : number_samples
+    ]
+    after_count_data: list = count_data[number_samples:]
+    # before_count_sem: float = np.std(before_count_data, ddof=1) / np.sqrt(
+    #     np.size(before_count_data)
+    # )
+    # after_count_sem: float = np.std(after_count_data, ddof=1) / np.sqrt(
+    #     np.size(after_count_data)
+    # )
+    current_directory: Path = Path.cwd()
+    plt.bar(
+        x="Before",
+        height=(before_count_data),
+        color=np.random.rand(1, 3),
+        label="Before",
+    )
+    plt.bar(
+        x="After", height=(after_count_data), color=np.random.rand(1, 3), label="After"
+    )
+    plt.xlabel("Group")
+    plt.ylabel("Mean Expression")
+    plt.title(f"Mean Expression Levels of {gene.title()}")
+    plt.xticks(rotation=45, ha="right")
+    plt.legend()
+    plt.savefig(f"{current_directory}/mean_expression.png")
+    plt.close()
 
 
 rna_seq_data: dict = RNA_SEQ_IO(EXPRESSION_DATA)
@@ -234,6 +309,12 @@ create_library_size_normalized_histogram(transposed_annotated_normalized_rna_seq
 # print(
 #     f"Range of Library Sizes: {calculate_library_size_range(calculate_library_sizes(transposed_annotated_normalized_rna_seq_data))}"
 # )
+fishers_linear_discriminant_data: dict = calculate_fishers_linear_discriminant(
+    upper_normalization_data
+)
+# print(fishers_linear_discriminant_data)
+# print_top_FLD_scores(capture_top_genes_FLD(fishers_linear_discriminant_data))
+create_expression_level_bar_chart(upper_normalization_data, "FNDC5")
 if len(argv) != 2:
     print(__doc__)
     exit(1)
