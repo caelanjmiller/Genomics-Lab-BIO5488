@@ -6,3 +6,5 @@
 **/*.yaml
 **/*.fasta
 **/*.fq
+**/*.vscode
+**/.ipynb_checkpoints/
