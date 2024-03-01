@@ -9,6 +9,8 @@ Usage: python3 find_hic_freq.py GENOMIC_BIN_MATRIX GM_MATRIX K562_MATRIX TAD_CSV
 from sys import argv, exit
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
 from pathlib import Path
 
 GENOMIC_BIN_MATRIX = Path(argv[1])
@@ -96,20 +98,40 @@ tad_genomic_bin_data_indices: tuple = calculate_genomic_bins(
 # Identify the value from the input matrix that is the n'th percentile (n here is one of your inputs to the function)
 # Plot a heatmap of the matrix (use a colormap in this plot. one way to fine control the colormap is the use the LinearSegmentedColormap.from_list() method to generate the colormap used in the plot).
 # The minimum value should be 0 and the maximum should be set to the value of the nth percentile you generated.
-# add rectangles to the heatmap where the TAD boundaries are if the TADs are present in the heatmap. If the length of the bondaries is larger than given bins, skip this process.
+# add rectangles to the heatmap where the TAD boundaries are if the TADs are present in the heatmap. If the length of the boundaries is larger than given bins, skip this process.
 # add a title
 # show the labels of x and y axis(i.e., the bin region)
 
 
 def plot_hic_map(
-    tad_genomic_bin_data_indices: tuple,
+    genomic_bin_data_indices: tuple,
     matrix_data: np.ndarray,
     title: str,
     filename: str,
-    percentile=95,
+    percentile: int = 95,
 ) -> None:
     """Create a heatmap of provided contact matrices"""
-    pass
+    # Unpack genomic bin locations for a given TAD
+    start_genomic_data_index, end_genomic_data_index = genomic_bin_data_indices
+    current_directory: Path = Path.cwd()
+    vmax_intensity = np.percentile(matrix_data, percentile)
+    plt.figure()
+    color_map = LinearSegmentedColormap.from_list(
+        "HiC", [(0, "white"), (0.5, "orange"), (1, "red")]
+    )
+    plt.imshow(matrix_data, cmap=color_map, vmin=0, vmax=vmax_intensity)
+    # Create color bar for heatmap
+    plt.colorbar()
+    # Create dashed rectangles around genomic bin locations if present
+    plt.axvline(x=start_genomic_data_index, color="red", linestyle="--", linewidth=0.5)
+    plt.axhline(y=start_genomic_data_index, color="red", linestyle="--", linewidth=0.5)
+    plt.axvline(x=end_genomic_data_index, color="red", linestyle="--", linewidth=0.5)
+    plt.axhline(y=end_genomic_data_index, color="red", linestyle="--", linewidth=0.5)
+    plt.xlabel("Bin Region")
+    plt.ylabel("Bin Region")
+    plt.title(f"{title}")
+    plt.savefig(f"{current_directory}/{filename}.png")
+    plt.close()
 
 
 ## Part 2
@@ -117,7 +139,8 @@ def plot_hic_map(
 # TODO: plot the GM matrix as a heatmap using the plot_hic_map() function
 # TODO: plot the K562 matrix as a heatmap using the plot_hic_map() function
 
-
+plot_hic_map()
+plot_hic_map()
 ## Part 3
 
 # TODO: define a function block_contact_freq() that will subset the original matrix provided to it based on a list of index values provided to it.
