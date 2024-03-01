@@ -10,6 +10,7 @@ from sys import argv, exit
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 from matplotlib.colors import LinearSegmentedColormap
 from pathlib import Path
 
@@ -74,7 +75,7 @@ def calculate_genomic_bins(
     tad1_genomic_bin_data_indices[list(tad_dict.keys())[0]] = tuple(
         (min(tad1_bins), max(tad1_bins))
     )
-    tad1_genomic_bin_data_indices[list(tad_dict.keys())[1]] = tuple(
+    tad2_genomic_bin_data_indices[list(tad_dict.keys())[1]] = tuple(
         (min(tad2_bins), max(tad2_bins))
     )
     return tuple((tad1_genomic_bin_data_indices, tad2_genomic_bin_data_indices))
@@ -108,11 +109,30 @@ def plot_hic_map(
     matrix_data: np.ndarray,
     title: str,
     filename: str,
+    genomic_bin_matrix: np.ndarray,
     percentile: int = 95,
 ) -> None:
     """Create a heatmap of provided contact matrices"""
     # Unpack genomic bin locations for a given TAD
-    start_genomic_data_index, end_genomic_data_index = genomic_bin_data_indices
+    tad1_genomic_data_index, tad2_genomic_data_index = genomic_bin_data_indices
+
+    tad1_genomic_data_start, tad1_genomic_data_end = tad1_genomic_data_index["TAD1"]
+    tad2_genomic_data_start, tad2_genomic_data_end = tad2_genomic_data_index["TAD2"]
+
+    tad1_length = tad1_genomic_data_end - tad1_genomic_data_start
+    tad2_length = tad2_genomic_data_end - tad2_genomic_data_start
+
+    # Define genomic start and stop locations, and break up into 10 contiguous segements for x axis labeling
+    labels_genomic_bins: list = (
+        np.round(
+            (np.linspace(min(genomic_bin_matrix), max(genomic_bin_matrix), 10) / 10**6),
+            1,
+        )
+        .astype(str)
+        .tolist()
+    )
+    final_labels: list = [f"{marker}MB" for marker in labels_genomic_bins]
+
     current_directory: Path = Path.cwd()
     vmax_intensity = np.percentile(matrix_data, percentile)
     plt.figure()
@@ -123,10 +143,27 @@ def plot_hic_map(
     # Create color bar for heatmap
     plt.colorbar()
     # Create dashed rectangles around genomic bin locations if present
-    plt.axvline(x=start_genomic_data_index, color="red", linestyle="--", linewidth=0.5)
-    plt.axhline(y=start_genomic_data_index, color="red", linestyle="--", linewidth=0.5)
-    plt.axvline(x=end_genomic_data_index, color="red", linestyle="--", linewidth=0.5)
-    plt.axhline(y=end_genomic_data_index, color="red", linestyle="--", linewidth=0.5)
+    ax = plt.gca()
+    tad1_rec = Rectangle(
+        (tad1_genomic_data_start, tad1_genomic_data_start),
+        tad1_length,
+        tad1_length,
+        fill=False,
+        facecolor=None,
+        linestyle="dashed",
+    )
+    tad2_rec = Rectangle(
+        (tad2_genomic_data_start, tad2_genomic_data_start),
+        tad2_length,
+        tad2_length,
+        fill=False,
+        facecolor=None,
+        linestyle="dashed",
+    )
+    ax.add_patch(tad1_rec)
+    ax.add_patch(tad2_rec)
+    plt.xticks(np.linspace(0, len(genomic_bin_matrix), 10), final_labels, rotation=45)
+    plt.yticks(np.linspace(0, len(genomic_bin_matrix), 10), final_labels, rotation=45)
     plt.xlabel("Bin Region")
     plt.ylabel("Bin Region")
     plt.title(f"{title}")
@@ -139,8 +176,20 @@ def plot_hic_map(
 # TODO: plot the GM matrix as a heatmap using the plot_hic_map() function
 # TODO: plot the K562 matrix as a heatmap using the plot_hic_map() function
 
-plot_hic_map()
-plot_hic_map()
+plot_hic_map(
+    tad_genomic_bin_data_indices,
+    gm_matrix,
+    "GM HiC Heatmap",
+    "gm_interaction_map",
+    genomic_bin_matrix,
+)
+plot_hic_map(
+    tad_genomic_bin_data_indices,
+    k562_matrix,
+    "K562 HiC Heatmap",
+    "k562_interaction_map",
+    genomic_bin_matrix,
+)
 ## Part 3
 
 # TODO: define a function block_contact_freq() that will subset the original matrix provided to it based on a list of index values provided to it.
