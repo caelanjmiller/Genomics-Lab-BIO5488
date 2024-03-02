@@ -6,7 +6,9 @@ python3 find_hic_freq.py GENOMIC_BIN_MATRIX GM_MATRIX K562_MATRIX TAD_CSV
 -
 Question 1:
 {Which cell line have merged TADs in this genomic region}
+
 -
 Question 2:
 {Quantitative evidence that the two TADs are merged in one cell line but retained in another}
+
 -

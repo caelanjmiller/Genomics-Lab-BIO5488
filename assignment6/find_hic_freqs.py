@@ -203,12 +203,100 @@ plot_hic_map(
 # return the intra or inter TAD interaction frequncy
 
 
+def block_contact_freq(
+    genomic_bin_data_indices: tuple, matrix_data: np.ndarray, mode: str
+) -> dict:
+    """Calculate intra & inter TAD contact frequencies"""
+    # Unpack TAD1 & 2 start and stop sites
+    tad1_genomic_data_index, tad2_genomic_data_index = genomic_bin_data_indices
+    tad1_start, tad1_stop = tad1_genomic_data_index["TAD1"]
+    tad2_start, tad2_stop = tad2_genomic_data_index["TAD2"]
+    # Create a copy of the matrix
+    copied_matrix = np.copy(matrix_data)
+
+    if mode == "intra":
+        intra_tad_frequencies: dict = {}
+        # Slice NumPy matrix & fill diagonals with 0s accordingly
+        tad1_sliced_matrix = copied_matrix[tad1_start:tad1_stop, tad1_start:tad1_stop]
+        np.fill_diagonal(tad1_sliced_matrix, 0)
+        tad2_sliced_matrix = copied_matrix[tad2_start:tad2_stop, tad2_start:tad2_stop]
+        np.fill_diagonal(tad2_sliced_matrix, 0)
+        intra_tad_frequencies["TAD1-intra"] = np.sum(tad1_sliced_matrix) / 2
+        intra_tad_frequencies["TAD2-intra"] = np.sum(tad2_sliced_matrix) / 2
+        return intra_tad_frequencies
+    elif mode == "inter":
+        inter_tad_frequencies: dict = {}
+        # Recalculating intra TAD Frequencies
+        # Slice NumPy matrix & fill diagonals with 0s accordingly
+        tad1_sliced_matrix = copied_matrix[tad1_start:tad1_stop, tad1_start:tad1_stop]
+        np.fill_diagonal(tad1_sliced_matrix, 0)
+        tad2_sliced_matrix = copied_matrix[tad2_start:tad2_stop, tad2_start:tad2_stop]
+        np.fill_diagonal(tad2_sliced_matrix, 0)
+        intra_tad1_frequencies = np.sum(tad1_sliced_matrix) / 2
+        intra_tad2_frequencies = np.sum(tad2_sliced_matrix) / 2
+        # Generating large subset matrix
+        tad_large_matrix = copied_matrix[tad1_start:tad2_stop, tad1_start:tad2_stop]
+        np.fill_diagonal(tad_large_matrix, 0)
+        # Calculating inter TAD frequency
+        inter_tad_frequencies["inter"] = (np.sum(tad_large_matrix) / 2) - (
+            intra_tad1_frequencies + intra_tad2_frequencies
+        )
+        return inter_tad_frequencies
+
+
 ## Part 4
 
 # TODO: use the block_contact_freq() function to calculate the intra-TAD interaction frequency for each TAD and the inter-TAD interaction frequency for GM12878 cells
-
+gm_intra_tad: dict = block_contact_freq(
+    tad_genomic_bin_data_indices, gm_matrix, "intra"
+)
+gm_inter_tad: dict = block_contact_freq(
+    tad_genomic_bin_data_indices, gm_matrix, "inter"
+)
 # TODO: use the function to calculate the intra-TAD interaction frequency for each TAD and the inter-TAD interaction frequency for K562 cells
+k256_intra_tad: dict = block_contact_freq(
+    tad_genomic_bin_data_indices, k562_matrix, "intra"
+)
+k256_inter_tad: dict = block_contact_freq(
+    tad_genomic_bin_data_indices, k562_matrix, "inter"
+)
 
-# TODO: convert all interaction frequencies into percents for each cell line. (if you are using pandas to store the interaction frequencies then make a copy of the dataframe you are using before doing so)
 
 # TODO: Write all interaction frequencies intra and inter to the output file (cell_interaction_frequencies.txt). Then write each of the percents to the same outputfile.
+def output_contact_freq_data(
+    k256_intra_tad: dict,
+    k256_inter_tad: dict,
+    gm_intra_tad: dict,
+    gm_inter_tad: dict,
+    filename: str,
+):
+    """Calculate contact frequencies percentages & output to tab delimited file"""
+    k256_tad1_intra: float = list(k256_intra_tad.values())[0]
+    k256_tad2_intra: float = list(k256_intra_tad.values())[1]
+    k256_inter: float = list(k256_inter_tad.values())[0]
+
+    gm_tad1_intra: float = list(gm_intra_tad.values())[0]
+    gm_tad2_intra: float = list(gm_intra_tad.values())[1]
+    gm_inter: float = list(gm_inter_tad.values())[0]
+
+    current_directory: Path = Path.cwd()
+
+    with open(f"{current_directory}/{filename}.tsv", "w") as TSV:
+        TSV.write("\tIntra_1\tIntra_2\tInter\n")
+        TSV.write(f"gm\t{gm_tad1_intra}\t{gm_tad2_intra}\t{gm_inter}\n")
+        TSV.write(f"k256\t{k256_tad1_intra}\t{k256_tad2_intra}\t{k256_inter}\n")
+        TSV.write(
+            f"gm_perc\t{round((gm_tad1_intra / sum([gm_inter, gm_tad1_intra, gm_tad2_intra])), 3)}\t{round((gm_tad2_intra / sum([gm_inter, gm_tad1_intra, gm_tad2_intra])), 3)}\t{round((gm_inter / sum([gm_inter, gm_tad1_intra, gm_tad2_intra])), 3)}\n"
+        )
+        TSV.write(
+            f"k256_perc\t{round((k256_tad1_intra / sum([k256_inter, k256_tad1_intra, k256_tad2_intra])), 3)}\t{round((k256_tad2_intra / sum([k256_inter, k256_tad1_intra, k256_tad2_intra])), 3)}\t{round((k256_inter / sum([k256_inter, k256_tad1_intra, k256_tad2_intra])), 3)}"
+        )
+
+
+output_contact_freq_data(
+    k256_intra_tad,
+    k256_inter_tad,
+    gm_intra_tad,
+    gm_inter_tad,
+    "cell_interaction_frequencies",
+)
