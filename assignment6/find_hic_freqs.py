@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-TODO: write a doc string
-<Your description of this script>
+Python script to create HiC Heatmaps of TADs & calculate intra & inter-contact frequencies, outputting this data in a TSV
 Usage: python3 find_hic_freq.py GENOMIC_BIN_MATRIX GM_MATRIX K562_MATRIX TAD_CSV
 """
 
