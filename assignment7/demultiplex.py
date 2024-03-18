@@ -1,4 +1,5 @@
 from pathlib import Path
+from collections import Counter
 from sys import argv, exit
 import csv
 
@@ -29,6 +30,16 @@ class Cell:
         self.treatment_count = treatment_count
         self.cell_tag1_count = cell_tag1_count
         self.cell_tag2_count = cell_tag2_count
+        self.set_cell_identity()
+
+    def set_cell_identity(self) -> None:
+        """Set cellular identity based upon bar code count"""
+        if self.control_count[1] == 1:
+            self.identity = "control"
+        elif self.treatment_count[1] == 1:
+            self.identity = "treatment"
+        else:
+            self.identity = "undetermined"
 
 
 def parse_cell_matrix_csv(FILE: Path) -> list:
@@ -40,10 +51,10 @@ def parse_cell_matrix_csv(FILE: Path) -> list:
         for line in file_contents:
             cell: Cell = Cell(
                 line[0],
-                tuple(line[1]),
-                tuple((csv_header[1], line[2])),
-                tuple((csv_header[2], line[3])),
-                tuple((csv_header[3], line[4])),
+                tuple((csv_header[1], int(line[1]))),
+                tuple((csv_header[2], int(line[2]))),
+                tuple((csv_header[3], int(line[3]))),
+                tuple((csv_header[4], int(line[4]))),
             )
             scrna_seq_data.append(cell)
     return scrna_seq_data
@@ -51,7 +62,13 @@ def parse_cell_matrix_csv(FILE: Path) -> list:
 
 def initial_demultiplexing(scrna_seq_data: list) -> dict:
     """Parse scRNA Seq cell barcoding to assign cells to treatment, control or nondetermined groups"""
-    pass
+    cell_identity_counts: dict = dict(
+        Counter([cell.identity for cell in scrna_seq_data])
+    )
+    return cell_identity_counts
 
 
 scrna_seq_data: list = parse_cell_matrix_csv(CALL_MATRIX)
+cell_identity_counts: dict = initial_demultiplexing(scrna_seq_data)
+
+print(cell_identity_counts)
