@@ -1,5 +1,6 @@
 from pathlib import Path
 from collections import Counter
+from itertools import zip_longest
 from sys import argv, exit
 import csv
 
@@ -68,7 +69,28 @@ def initial_demultiplexing(scrna_seq_data: list) -> dict:
     return cell_identity_counts
 
 
+def secondary_demultiplexing(scrna_seq_data: list) -> dict:
+    """
+    Parse scRNA Seq cell barcoding to assign cells to treatment, control or nondetermined groups
+    after correcting for a Hamming Distance of 1
+    """
+    pass
+
+
+def calculate_hamming_distance(sequence_one: str, sequence_two: str) -> int:
+    """Given two strings, return the Hamming Distance between them"""
+    hamming_distance: int = 0
+    for i, j in zip_longest(list(sequence_one), list(sequence_two)):
+        if i != j:
+            hamming_distance += 1
+        else:
+            hamming_distance += 0
+    return hamming_distance
+
+
 scrna_seq_data: list = parse_cell_matrix_csv(CALL_MATRIX)
 cell_identity_counts: dict = initial_demultiplexing(scrna_seq_data)
 
-print(cell_identity_counts)
+print("....Initial Demultiplexing....")
+for cell_identity, count in cell_identity_counts.items():
+    print(f"{cell_identity}: {count}")
