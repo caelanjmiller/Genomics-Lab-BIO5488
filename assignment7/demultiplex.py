@@ -62,7 +62,7 @@ def parse_cell_matrix_csv(FILE: Path) -> list:
 
 
 def initial_demultiplexing(scrna_seq_data: list) -> dict:
-    """Parse scRNA Seq cell barcoding to assign cells to treatment, control or nondetermined groups"""
+    """Parse scRNA Seq cell barcoding to assign cells to treatment, control or undetermined groups"""
     cell_identity_counts: dict = dict(
         Counter([cell.identity for cell in scrna_seq_data])
     )
@@ -71,10 +71,18 @@ def initial_demultiplexing(scrna_seq_data: list) -> dict:
 
 def secondary_demultiplexing(scrna_seq_data: list) -> dict:
     """
-    Parse scRNA Seq cell barcoding to assign cells to treatment, control or nondetermined groups
+    Parse scRNA Seq cell barcoding to assign cells to treatment, control or undetermined groups
     after correcting for a Hamming Distance of 1
     """
-    pass
+    for cell in scrna_seq_data:
+        # Iterate through cells that are undetermined & try to parse if their CellTags are actually control or treatment based upon minor Hamming Distance(s)
+        if cell.identity == "undetermined":
+            if cell.cell_tag1_count == 1:
+                pass
+            elif cell.cell_tag2_count == 1:
+                pass
+            else:
+                cell.identity == "undetermined"
 
 
 def calculate_hamming_distance(sequence_one: str, sequence_two: str) -> int:
@@ -94,3 +102,4 @@ cell_identity_counts: dict = initial_demultiplexing(scrna_seq_data)
 print("....Initial Demultiplexing....")
 for cell_identity, count in cell_identity_counts.items():
     print(f"{cell_identity}: {count}")
+print("....Secondary Demultiplexing....")
