@@ -42,6 +42,9 @@ class Cell:
         else:
             self.identity = "undetermined"
 
+    def update_cell_identity(self, identity: str) -> None:
+        self.identity = identity
+
 
 def parse_cell_matrix_csv(FILE: Path) -> list:
     """Parse cell matrix CSV & initialize Cell objects from provided information"""
@@ -76,13 +79,45 @@ def secondary_demultiplexing(scrna_seq_data: list) -> dict:
     """
     for cell in scrna_seq_data:
         # Iterate through cells that are undetermined & try to parse if their CellTags are actually control or treatment based upon minor Hamming Distance(s)
+        control_barcode: str = cell.control_count[0]
+        treatment_barcode: str = cell.treatment_count[0]
         if cell.identity == "undetermined":
-            if cell.cell_tag1_count == 1:
-                pass
-            elif cell.cell_tag2_count == 1:
-                pass
+            if cell.cell_tag1_count[1] == 1:
+                cell_tag1_barcode: str = cell.cell_tag1_count[0]
+                hamming_distance_treatment: int = calculate_hamming_distance(
+                    treatment_barcode, cell_tag1_barcode
+                )
+                hamming_distance_control: int = calculate_hamming_distance(
+                    control_barcode, cell_tag1_barcode
+                )
+                if hamming_distance_treatment <= 1:
+                    cell.update_cell_identity("treatment")
+                elif hamming_distance_control <= 1:
+                    cell.update_cell_identity("control")
+                else:
+                    # Don't change cell identity from undetermined if it cannot be determined
+                    continue
+            elif cell.cell_tag2_count[1] == 1:
+                cell_tag2_barcode: str = cell.cell_tag2_count[0]
+                hamming_distance_treatment: int = calculate_hamming_distance(
+                    treatment_barcode, cell_tag2_barcode
+                )
+                hamming_distance_control: int = calculate_hamming_distance(
+                    control_barcode, cell_tag2_barcode
+                )
+                if hamming_distance_treatment <= 1:
+                    cell.update_cell_identity("treatment")
+                elif hamming_distance_control <= 1:
+                    cell.update_cell_identity("control")
+                else:
+                    continue
             else:
-                cell.identity == "undetermined"
+                # Accounts for cases where no CellTags are present for a given Cell (0,0,0,0)
+                cell.update_cell_identity("undetermined")
+        else:
+            continue
+    cell_identity_counts = initial_demultiplexing(scrna_seq_data)
+    return cell_identity_counts
 
 
 def calculate_hamming_distance(sequence_one: str, sequence_two: str) -> int:
@@ -98,8 +133,10 @@ def calculate_hamming_distance(sequence_one: str, sequence_two: str) -> int:
 
 scrna_seq_data: list = parse_cell_matrix_csv(CALL_MATRIX)
 cell_identity_counts: dict = initial_demultiplexing(scrna_seq_data)
-
+secondary_cell_identity_counts: dict = secondary_demultiplexing(scrna_seq_data)
 print("....Initial Demultiplexing....")
 for cell_identity, count in cell_identity_counts.items():
     print(f"{cell_identity}: {count}")
 print("....Secondary Demultiplexing....")
+for cell_identity, count in secondary_cell_identity_counts.items():
+    print(f"{cell_identity}: {count}")
