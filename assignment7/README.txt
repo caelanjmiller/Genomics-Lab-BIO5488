@@ -24,5 +24,5 @@ Question 3:
 1. For assignment of treatment and control groups, more than 2 CellTags can be utilized to prevent any potential overlap
 2. Although it can be precarious, increasing the acceptable Hamming Distance (from 1 to 2 in this exercise for example),
 would help to further delineate the different populations (e.g. GTGTAGC vs ATGTTGC - HD of 2 whereas ATGTAGC vs ATGTTGC - HD of 1)
-3. 
+3. Utilize an allowlist for acceptable CellTags between both populations
 -
