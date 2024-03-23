@@ -81,25 +81,36 @@ def SV_VCF_IO(SV_VCF: Path, individual_column: str, data_needed: str) -> dict:
                         if "SVTYPE" in string
                     ][0]
                     sv_type: str = sv_data[sv_type_index].split("=")[1]
-                    sv_start_index: int = [
-                        index for index, string in enumerate(sv_data) if "POS" in string
-                    ][0]
-                    sv_end_index: int = [
-                        index for index, string in enumerate(sv_data) if "END" in string
-                    ][0]
-                    sv_start: int = int(sv_data[sv_start_index].split("POS=")[1])
-                    sv_end: int = int(sv_data[sv_end_index].split("END=")[1])
-                    sv_length: int = abs(sv_end - sv_start)
-                    if sv_type == "BND":
-                        sv_lengths_collection["BND"].append(sv_length)
-                    elif sv_type == "DEL":
+                    if sv_type == "DEL":
+                        sv_start_index: int = [
+                            index
+                            for index, string in enumerate(sv_data)
+                            if "POS" in string
+                        ][0]
+                        sv_end_index: int = [
+                            index
+                            for index, string in enumerate(sv_data)
+                            if "END" in string
+                        ][0]
+                        sv_start: int = int(sv_data[sv_start_index].split("POS=")[1])
+                        sv_end: int = int(sv_data[sv_end_index].split("END=")[1])
+                        sv_length: int = abs(sv_end - sv_start)
                         sv_lengths_collection["DEL"].append(sv_length)
-                    elif sv_type == "DUP":
-                        sv_lengths_collection["DUP"].append(sv_length)
                     elif sv_type == "MEI":
+                        sv_start_index: int = [
+                            index
+                            for index, string in enumerate(sv_data)
+                            if "POS" in string
+                        ][0]
+                        sv_end_index: int = [
+                            index
+                            for index, string in enumerate(sv_data)
+                            if "END" in string
+                        ][0]
+                        sv_start: int = int(sv_data[sv_start_index].split("POS=")[1])
+                        sv_end: int = int(sv_data[sv_end_index].split("END=")[1])
+                        sv_length: int = abs(sv_end - sv_start)
                         sv_lengths_collection["MEI"].append(sv_length)
-                    elif sv_type == "INV":
-                        sv_lengths_collection["INV"].append(sv_length)
                 else:
                     continue
             return sv_lengths_collection
@@ -155,7 +166,6 @@ def SNV_VCF_IO(SNV_VCF: Path, individual_column: str, data_needed: str):
             # Empty dict for SNV lengths to append to
             snv_lengths_collection: dict = {}
             snv_lengths_collection["INDEL"] = []
-            snv_lengths_collection["SNV"] = []
             for line in itertools.islice(vcf, header_start_index + 1, None):
                 data: list = line.strip().split("\t")
                 individual_data: list = data[individual_column_index].strip().split(":")
@@ -176,8 +186,6 @@ def SNV_VCF_IO(SNV_VCF: Path, individual_column: str, data_needed: str):
                     snv_length: int = abs(len(alt_data) - len(ref_data))
                     if abs(snv_length) >= 1:
                         snv_lengths_collection["INDEL"].append(snv_length)
-                    else:
-                        snv_lengths_collection["SNV"].append(snv_length)
                 else:
                     continue
             return snv_lengths_collection
@@ -191,10 +199,19 @@ def output_table_from_dict(data_set1: dict, data_set2: dict) -> None:
         print(f"{key}\t{value}")
 
 
-# SV_COUNTER: dict = SV_VCF_IO(SV_FILE, "NA12878", "variant")
-# SNV_COUNTER: dict = SNV_VCF_IO(SNV_FILE, "NA12878", "variant")
-# output_table_from_dict(SV_COUNTER, SNV_COUNTER)
+def sv_proportion_of_total(sv_counter: dict, snv_counter: dict) -> float:
+    """Calculate proportion of genomic variation that are SVs"""
+    collated_data: dict = {**sv_counter, **snv_counter}
+    total_count: int = sum(list(collated_data.values()))
+    sv_proportion: float = round((sum(list(sv_counter.values())) / total_count), 4)
+    return sv_proportion
+
+
+SV_COUNTER: dict = SV_VCF_IO(SV_FILE, "NA12878", "variant")
+SNV_COUNTER: dict = SNV_VCF_IO(SNV_FILE, "NA12878", "variant")
+output_table_from_dict(SV_COUNTER, SNV_COUNTER)
+sv_proportion: float = sv_proportion_of_total(SV_COUNTER, SNV_COUNTER)
+print(sv_proportion)
 
 SV_LENGTH_COUNTER: dict = SV_VCF_IO(SV_FILE, "NA12878", "length")
-# SNV_LENGTH_COUNTER: dict = SNV_VCF_IO(SNV_FILE, "NA12878", "length")
-# output_table_from_dict(SV_LENGTH_COUNTER, SNV_LENGTH_COUNTER)
+SNV_LENGTH_COUNTER: dict = SNV_VCF_IO(SNV_FILE, "NA12878", "length")
