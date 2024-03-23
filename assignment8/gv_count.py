@@ -2,6 +2,8 @@ from sys import argv, exit
 from pathlib import Path
 import itertools
 from collections import Counter
+import matplotlib.pyplot as plt
+
 
 SNV_FILE: Path = Path(argv[1])
 SV_FILE: Path = Path(argv[2])
@@ -62,10 +64,7 @@ def SV_VCF_IO(SV_VCF: Path, individual_column: str, data_needed: str) -> dict:
         elif data_needed.upper() == "LENGTH":
             # Empty list for SV lengths to append to
             sv_lengths_collection: dict = {}
-            sv_lengths_collection["BND"] = []
             sv_lengths_collection["DEL"] = []
-            sv_lengths_collection["DUP"] = []
-            sv_lengths_collection["INV"] = []
             sv_lengths_collection["MEI"] = []
             for line in itertools.islice(vcf, header_start_index + 1, None):
                 data: list = line.strip().split("\t")
@@ -207,6 +206,21 @@ def sv_proportion_of_total(sv_counter: dict, snv_counter: dict) -> float:
     return sv_proportion
 
 
+def generate_histogram_sv_genomic_variation(
+    sv_data: dict, title: tuple, filename: str
+) -> None:
+    """Generate histogram of lengths for genomic variations"""
+    current_directory: Path = Path.cwd()
+    plt.figure()
+    plt.hist(list(sv_data.values()), bins=20)
+    plt.autoscale()
+    plt.xlabel("Length (bp)")
+    plt.ylabel("Count")
+    plt.title(f"Length of {title[0]}s in {title[1]}")
+    plt.savefig(f"{current_directory}/histogram_{filename}.png")
+    plt.close()
+
+
 SV_COUNTER: dict = SV_VCF_IO(SV_FILE, "NA12878", "variant")
 SNV_COUNTER: dict = SNV_VCF_IO(SNV_FILE, "NA12878", "variant")
 output_table_from_dict(SV_COUNTER, SNV_COUNTER)
@@ -215,3 +229,13 @@ print(sv_proportion)
 
 SV_LENGTH_COUNTER: dict = SV_VCF_IO(SV_FILE, "NA12878", "length")
 SNV_LENGTH_COUNTER: dict = SNV_VCF_IO(SNV_FILE, "NA12878", "length")
+SV_LENGTHS: list = [{sv: lengths} for sv, lengths in SV_LENGTH_COUNTER.items()]
+generate_histogram_sv_genomic_variation(
+    SV_LENGTHS[0], tuple(("DEL", "NA12878")), "deletions"
+)
+generate_histogram_sv_genomic_variation(
+    SV_LENGTHS[1], tuple(("MEI", "NA12878")), "meis"
+)
+generate_histogram_sv_genomic_variation(
+    SNV_LENGTH_COUNTER, tuple(("INDEL", "NA12878")), "indels"
+)
