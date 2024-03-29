@@ -42,18 +42,20 @@ A. In which gene does this genetic variant lie?
 sterile alpha and TIR motif containing 1 (SARM 1)
 
 B. How many alternative alleles are present in the gnomAD v3.1.2 database?
-28
+388
 
 C. What’s the overall minor allele frequency in the gnomAD v3.1.2 database?
-1.84e-4
+2.55e-4
 
 D. What’s the variant type of this variant? (pLoF/missense/synonymous)
 missense
 
  
 E. Have any human diseases been reported to be associated with this gene's mutations? Do you believe that this variant is pathogenic to the disease? Please utilize information from ClinVar to make your judgment. Additionally, what is the known functional role of this gene according to the literature?
-Congenital defect of folate absorption, Amyotrophic lateral sclerosis & general inborn genetic diseases have been identified as human diseases
-associated with this gene's mutations. Based upon the nature of the mutations (missense), 
+Congenital defect of folate absorption, Amyotrophic lateral sclerosis & general inborn genetic diseases have been identified as human diseases associated with this gene's mutations. Based upon the nature of the mutations and the associations with diseases in similar variants at this locus, I would say this 
+variant is pathogenic to disease. SARM1's function has been associated with axon pro-degeneration and programmed cell death [https://www.nature.com/articles/s41598-022-18052-8],
+so having ALS, a neurodegenerative disease, associated with pathogenic variants at this locus makes sense, especially in light of 
+evidence that consitituvely expressed SARM1 induces neuropathy and is enriched in ALS patients [https://molecularneurodegeneration.biomedcentral.com/articles/10.1186/s13024-021-00511-x]
 
 Part 4
 A. Please write your Python script for the Two-tailed Fisher's exact test, and name it ‘fisher_test.py’.
@@ -70,7 +72,10 @@ B. Your Python script needs to be able to print out the following information on
 
 C. Copy and paste the calculated odds ratio, p-value, and upper and lower limits of 95% confidence interval here.
 
-
+Odds Ratio: 50.0081
+P-value: 0.0008
+Upper Limit of 95% CI: 202.4432
+Lower Limit of 95% CI: 12.3531
 
 
 [END]
