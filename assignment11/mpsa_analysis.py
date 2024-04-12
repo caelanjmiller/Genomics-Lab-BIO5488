@@ -1,10 +1,11 @@
-# Complete the code as indicated in the comments.
+#!/usr/bin/env python3
 
-# I strongly recommend working out individual sections of code
-# in an interactive format like jupyter notebook. Then paste your
-# code into the appropriate sections below and run this script to generate the necessary # output.
 
-# needed imports
+"""
+Python script to analyze MPSA data for BRCA2
+Usage: python3 mpsa_analysis.py <MPSA DATA CSV> <BRCA VARIANTS TXT>
+"""
+
 import pandas as pd
 from sys import argv
 from pathlib import Path
@@ -12,6 +13,11 @@ from collections import Counter
 
 MPSA_CSV: Path = Path(argv[1])
 BRCA_TXT: Path = Path(argv[2])
+
+
+if len(argv) != 3:
+    print(__doc__)
+    exit(1)
 
 # read in the data
 MPSA_DF = pd.read_csv(MPSA_CSV, sep=",")
@@ -123,7 +129,28 @@ print(f"Decile distribution: {dict(sorted(gc_splice_decile_indices_counter.items
 # Hint: Use print() to show either the relevant rows of the dataframe
 # or create a list of sequences in the top decile and print the list.
 
-### YOUR CODE HERE
+top_decile_gc_splice_site_sequences: list = []
+for splice_site, psi in gc_splice_site_psi.items():
+    decile_index: int = get_decile_index(psi)
+    if decile_index == 9:
+        top_decile_gc_splice_site_sequences.append(splice_site)
+    else:
+        continue
+print("GC Sequences in Top Decile:")
+print(top_decile_gc_splice_site_sequences)
+
+# Determine fraction of GC sequences in top decile that have G's at both -1 & +5 positions
+gc_have_gg_counter: int = 0
+for sequence in top_decile_gc_splice_site_sequences:
+    position_one: int = splice_site_coordinate_conversion(-1)
+    position_two: int = splice_site_coordinate_conversion(+5)
+    if sequence[position_one] == "G" and sequence[position_two] == "G":
+        gc_have_gg_counter += 1
+    else:
+        continue
+print(
+    f"Fraction of top decile GC sequences that have G's at both -1 & +5 positions: {round(float(gc_have_gg_counter / len(top_decile_gc_splice_site_sequences)), 4)}"
+)
 
 #### Task 5: Check the PSI of pathogenic variants ####
 
@@ -149,7 +176,7 @@ brca2_decile_indices_counter: dict = dict(Counter(brca2_decile_indices))
 
 # Print out the distribution
 print("Use the output below to answer question 4.")
-print("Decile distribution:")
+print(f"BRCA2 Decile distribution: {dict(sorted(brca2_decile_indices_counter))}")
 
 # Calculate the mean PSI for the pathogenic sequences and print
 # the result:
