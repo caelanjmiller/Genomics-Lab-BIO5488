@@ -7,6 +7,7 @@ Usage: python3 mpsa_analysis.py <MPSA DATA CSV> <BRCA VARIANTS TXT>
 """
 
 import pandas as pd
+import numpy as np
 from sys import argv
 from pathlib import Path
 from collections import Counter
@@ -181,4 +182,16 @@ print(f"BRCA2 Decile distribution: {dict(sorted(brca2_decile_indices_counter))}"
 # Calculate the mean PSI for the pathogenic sequences and print
 # the result:
 
-### YOUR CODE HERE
+brca2_top_decile_psi_values: list = []
+for psi in brca2_psi_values:
+    decile_index: int = get_decile_index(psi)
+    if decile_index == 9:
+        brca2_top_decile_psi_values.append(psi)
+    else:
+        continue
+brca2_mean_psi: float = round(np.mean(brca2_top_decile_psi_values), 4)
+print(f"Mean PSI value of BRCA2 pathogenic variants: {brca2_mean_psi}")
+
+print(
+    f"Fraction of pathogenic mutations that have a PSI score in the top decile: {round(float(len(brca2_top_decile_psi_values) / len(brca2_mutations)), 4)}"
+)
