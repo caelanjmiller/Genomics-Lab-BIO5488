@@ -12,10 +12,12 @@ Please provide the exact command line arguments you used to generate your result
 python3 mpsa_analysis.py mpsa_data.csv
 -
 Question 1: Looking at the distribution of scores by PSI decile, into which two deciles to most PSI sequences fall? What does this result suggest about the efficiency 5’ splice sites?
-Most PSI sequences fall into the 0 & 9th deciles; this would suggest that 5' splice sites are quite efficient, any mutation 
+
+Most PSI sequences fall into the 0 & 9th deciles; this would suggest that 5' splice sites are quite efficient, any mutation in the splice site obliterates any potential reporter read out. 
 -
 Question 2: Consider the number of ‘GC’ splice site sequences that fall into the top decile. Are ‘GC’ splice sites more or less likely than ‘GU’ splice sites to be spliced with 90-100% efficiency? What fraction of the splice sites in the top PSI decile are ‘GC’?
 
+The fraction of GC non-canonical sites as a whole is ~50% (15414 rows of data), and of this, only 20 were in the top decile (9). So 20/30483 (the entire MPSA dataset), equals ~.0006561.
 -
 Question 3: What fraction of the GC sequences in the top decile have G’s at both -1 and +5 positions? Sequences with G’s at -1 and +5 make up about 6% of all possible sequences. Are these sequences enriched in among sequences in top PSI decile?
 

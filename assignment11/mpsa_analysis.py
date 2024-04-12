@@ -6,13 +6,15 @@
 
 # needed imports
 import pandas as pd
+from sys import argv
+from pathlib import Path
+from collections import Counter
+
+MPSA_CSV: Path = Path(argv[1])
+BRCA_TXT: Path = Path(argv[2])
 
 # read in the data
-df = pd.read_csv("mpsa_data.csv", sep=",")
-
-# visualize the dataframe structure
-# Take note of the columns.
-print("df.head():\n", df.head(), "\n")
+MPSA_DF = pd.read_csv(MPSA_CSV, sep=",")
 
 
 # A function to determine PSI decile:
@@ -67,23 +69,16 @@ def splice_site_coordinate_conversion(splice_site_index: int) -> int:
 # with a PSI within [0:10), [10:20), up through [90:100]
 # Due to experimental noise some sequences have a PSI > 100.
 # These are assumed to be equivalent to PSI 100.
-# Use this list to track your decile counts
-decile_counts = [0] * 10
 
 # Extract the list of PSI values from the dataframe:
 
-### YOUR CODE HERE
-
-# Iterate through the list of PSI scores. For each
-# score, determine its decile then increment the decile count.
-# You can use get_decile_index to obtain the correct
-# decile to increment in decile_counts.
-
-### YOUR CODE HERE
+psi_values: list = MPSA_DF["psi"].to_list()
+decile_indices: list = [get_decile_index(psi) for psi in psi_values]
+decile_indices_counter: dict = dict(Counter(decile_indices))
 
 # Print your output
-print("Use the output below to answer question 1.")
-print("Decile distribution:\n", decile_counts)
+print("Use the output below to answer Question 1")
+print(f"Decile indices: {dict(sorted(decile_indices_counter.items()))}")
 
 #### TASK3: Examine the distribution of PSI values of GC splice sites.
 
@@ -103,15 +98,25 @@ print("Decile distribution:\n", decile_counts)
 # Hint 3: To calculate the distribution among
 # deciles, you can recyle your code from task 2 with a few small tweaks.
 
-
+mpsa_data_dict: dict = dict(zip(MPSA_DF["splice_site"], MPSA_DF["psi"]))
+gc_splice_site_psi: dict = {}
+for splice_site, psi in mpsa_data_dict.items():
+    position_one: int = splice_site_coordinate_conversion(1)
+    position_two: int = splice_site_coordinate_conversion(2)
+    if splice_site[position_one : position_two + 1] == "GC":
+        gc_splice_site_psi[splice_site] = psi
+    else:
+        continue
+gc_splice_site_psi_values: list = list(gc_splice_site_psi.values())
 # Create list of GC deciles:
-gc_decile_counts = [0] * 10
-
-### YOUR CODE HERE
+gc_splice_site_decile_indices: list = [
+    get_decile_index(psi) for psi in gc_splice_site_psi_values
+]
+gc_splice_decile_indices_counter: dict = dict(Counter(gc_splice_site_decile_indices))
 
 # Print your output:
 print("Use the output below to answer question 2.")
-print("Decile distribution:\n", gc_decile_counts)
+print(f"Decile distribution: {dict(sorted(gc_splice_decile_indices_counter.items()))}")
 
 
 #### Task 4: Print out GC sequences that are in the top decile ####
@@ -123,32 +128,28 @@ print("Decile distribution:\n", gc_decile_counts)
 #### Task 5: Check the PSI of pathogenic variants ####
 
 # Read in list of pathogenic sequences
-file = open("brca2_mutations.txt")
-brca2_muts = []
-for line in file:
-    brca2_muts.append(line.strip("\n"))
-file.close()
+brca2_mutations: list = [
+    mutation.strip() for mutation in open(Path("brca2_mutations.txt")).readlines()
+]
 
 # Extract PSI scores for the pathogenic sequences
 # Hint: the pandas function .isin() will be helpful here.
 # Alternately, you can use a for loop to create a list of
 # the correct psi scores.
 
-### YOUR CODE HERE
-
 # Calculate the distribution among deciles
-# Similar to Tasks 2 and 3.
-brca2_decile_counts = [0] * 10  # list to hold counts
-
 # Again use get_decile_index for each score
 # Use that index to increment the decile count
 
-### YOUR CODE HERE
 
+brca2_filtered_mutations_df = MPSA_DF[MPSA_DF["splice_site"].isin(brca2_mutations)]
+brca2_psi_values = brca2_filtered_mutations_df["psi"].to_list()
+brca2_decile_indices: list = [get_decile_index(psi) for psi in brca2_psi_values]
+brca2_decile_indices_counter: dict = dict(Counter(brca2_decile_indices))
 
 # Print out the distribution
 print("Use the output below to answer question 4.")
-print("Decile distribution:\n", brca2_decile_counts)
+print("Decile distribution:")
 
 # Calculate the mean PSI for the pathogenic sequences and print
 # the result:
