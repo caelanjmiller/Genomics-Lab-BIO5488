@@ -1,0 +1,11 @@
+Use the output below to answer Question 1
+Decile indices: {0: 28992, 1: 235, 2: 131, 3: 103, 4: 86, 5: 83, 6: 94, 7: 112, 8: 139, 9: 508}
+Use the output below to answer question 2.
+Decile distribution: {0: 15291, 1: 25, 2: 11, 3: 12, 4: 15, 5: 13, 6: 13, 7: 7, 8: 7, 9: 20}
+GC Sequences in Top Decile:
+['GGUGCGUAC', 'GGUGCGUAA', 'GGUGCGUGU', 'GGUGCGUGC', 'AAGGCAAGU', 'ACGGCAAGU', 'GGUGCGGAU', 'GGUGCGUUG', 'GGUGCGUGA', 'CAGGCAAGU', 'GGUGCGUUA', 'GGUGCGUAU', 'GGUGCGUCA', 'GGUGCGUUC', 'GGUGCGUCU', 'GGUGCGCGC', 'CAGGCGAGU', 'GAGGCAAGU', 'CGUGCGUAC', 'GGUGCGGUA']
+Fraction of top decile GC sequences that have G's at both -1 & +5 positions: 0.2
+Use the output below to answer question 4.
+BRCA2 Decile distribution: {0: 21, 1: 2, 2: 1, 3: 3, 4: 2, 6: 1, 7: 1, 8: 3, 9: 7}
+Mean PSI value of BRCA2 pathogenic variants: 100.0055
+Fraction of pathogenic mutations that have a PSI score in the top decile: 0.1591

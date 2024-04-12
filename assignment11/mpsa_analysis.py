@@ -177,7 +177,9 @@ brca2_decile_indices_counter: dict = dict(Counter(brca2_decile_indices))
 
 # Print out the distribution
 print("Use the output below to answer question 4.")
-print(f"BRCA2 Decile distribution: {dict(sorted(brca2_decile_indices_counter))}")
+print(
+    f"BRCA2 Decile distribution: {dict(sorted(brca2_decile_indices_counter.items()))}"
+)
 
 # Calculate the mean PSI for the pathogenic sequences and print
 # the result:
