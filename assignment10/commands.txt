@@ -1,0 +1,13 @@
+crux tide-index --overwrite T --missed-cleavages 2 --mods-spec K+229.162932 --nterm-peptide-mods-spec X+229.16293 --output-dir crux-run1 ~/genomics-lab/assignment10/uniprotkb_proteome_UP000005640_AND_revi_2024_03_26.fasta human_swissprot_TMT11
+
+crux tide-index --overwrite T --missed-cleavages 2 --mods-spec K+229.162932 --mods-spec 3M+15.994915 --nterm-peptide-mods-spec X+229.16293 --output-dir crux-run2 ~/genomics-lab/assignment10/uniprotkb_proteome_UP000005640_AND_revi_2024_03_26.fasta human_swissprot_TMT11_oxM
+
+crux tide-index --overwrite T --missed-cleavages 2 --mods-spec K+229.162932 --mods-spec 3M+15.994915 --mods-spec 3STY+79.966331 --nterm-peptide-mods-spec X+229.16293 --output-dir crux-run3 ~/genomics-lab/assignment10/uniprotkb_proteome_UP000005640_AND_revi_2024_03_26.fasta human_swissprot_TMT11_oxM_pSTY
+
+crux pipeline --overwrite T --output-dir crux-run4 ~/genomics-lab/assignment10/AP1_QEHF2_AP1_9_18.mzML.gz human_swissprot_TMT11/
+
+crux tide-index --overwrite T --output-dir crux-run5 --missed-cleavages 2 --mods-spec K+229.162932 --nterm-peptide-mods-spec X+229.16293 ~/genomics-lab/assignment10/CCDS_20221027_6frame.fasta human_CCDS_6frame_TMT11
+
+crux pipeline --overwrite T --output-dir crux-run6 ~/genomics-lab/assignment10/AP1_QEHF2_AP1_9_18.mzML.gz human_CCDS_6frame_MT11/
+
+bsub -Is -q workshop-interactive -G compute-workshop -R 'rusage[mem=24GB]' -a 'docker(takinwe1/bio5488:0.0)' /bin/bash
