@@ -212,7 +212,7 @@ def generate_histogram_sv_genomic_variation(
     """Generate histogram of lengths for genomic variations"""
     current_directory: Path = Path.cwd()
     plt.figure()
-    plt.hist(list(sv_data.values()), bins=20)
+    plt.hist(list(sv_data.values()))
     plt.autoscale()
     plt.xlabel("Length (bp)")
     plt.ylabel("Count")
